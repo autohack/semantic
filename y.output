@@ -1,0 +1,443 @@
+Terminals unused in grammar
+
+   INT
+   FLOAT
+   CHAR
+
+
+State 29 conflicts: 4 shift/reduce
+State 30 conflicts: 4 shift/reduce
+State 31 conflicts: 4 shift/reduce
+State 32 conflicts: 4 shift/reduce
+
+
+Grammar
+
+    0 $accept: startdash $end
+
+    1 startdash: VOID MAIN '(' ')' '{' block '}'
+
+    2 block: whileblock block
+    3      | %empty
+
+    4 whileblock: WHILE '(' condition ')' whileblockdash
+
+    5 whileblockdash: '{' block '}'
+
+    6 condition: expression '<' expression
+    7          | expression '>' expression
+
+    8 expression: expression '+' expression
+    9           | expression '-' expression
+   10           | expression '*' expression
+   11           | expression '/' expression
+   12           | NUMBER
+   13           | IDENTIFIER
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 1 4
+')' (41) 1 4
+'*' (42) 10
+'+' (43) 8
+'-' (45) 9
+'/' (47) 11
+'<' (60) 6
+'>' (62) 7
+'{' (123) 1 5
+'}' (125) 1 5
+error (256)
+INT (258)
+FLOAT (259)
+CHAR (260)
+VOID (261) 1
+MAIN (262) 1
+WHILE (263) 4
+IDENTIFIER (264) 13
+NUMBER (265) 12
+
+
+Nonterminals, with rules where they appear
+
+$accept (21)
+    on left: 0
+startdash (22)
+    on left: 1, on right: 0
+block (23)
+    on left: 2 3, on right: 1 2 5
+whileblock (24)
+    on left: 4, on right: 2
+whileblockdash (25)
+    on left: 5, on right: 4
+condition (26)
+    on left: 6 7, on right: 4
+expression (27)
+    on left: 8 9 10 11 12 13, on right: 6 7 8 9 10 11
+
+
+State 0
+
+    0 $accept: . startdash $end
+
+    VOID  shift, and go to state 1
+
+    startdash  go to state 2
+
+
+State 1
+
+    1 startdash: VOID . MAIN '(' ')' '{' block '}'
+
+    MAIN  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: startdash . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 startdash: VOID MAIN . '(' ')' '{' block '}'
+
+    '('  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: startdash $end .
+
+    $default  accept
+
+
+State 5
+
+    1 startdash: VOID MAIN '(' . ')' '{' block '}'
+
+    ')'  shift, and go to state 6
+
+
+State 6
+
+    1 startdash: VOID MAIN '(' ')' . '{' block '}'
+
+    '{'  shift, and go to state 7
+
+
+State 7
+
+    1 startdash: VOID MAIN '(' ')' '{' . block '}'
+
+    WHILE  shift, and go to state 8
+
+    $default  reduce using rule 3 (block)
+
+    block       go to state 9
+    whileblock  go to state 10
+
+
+State 8
+
+    4 whileblock: WHILE . '(' condition ')' whileblockdash
+
+    '('  shift, and go to state 11
+
+
+State 9
+
+    1 startdash: VOID MAIN '(' ')' '{' block . '}'
+
+    '}'  shift, and go to state 12
+
+
+State 10
+
+    2 block: whileblock . block
+
+    WHILE  shift, and go to state 8
+
+    $default  reduce using rule 3 (block)
+
+    block       go to state 13
+    whileblock  go to state 10
+
+
+State 11
+
+    4 whileblock: WHILE '(' . condition ')' whileblockdash
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    condition   go to state 16
+    expression  go to state 17
+
+
+State 12
+
+    1 startdash: VOID MAIN '(' ')' '{' block '}' .
+
+    $default  reduce using rule 1 (startdash)
+
+
+State 13
+
+    2 block: whileblock block .
+
+    $default  reduce using rule 2 (block)
+
+
+State 14
+
+   13 expression: IDENTIFIER .
+
+    $default  reduce using rule 13 (expression)
+
+
+State 15
+
+   12 expression: NUMBER .
+
+    $default  reduce using rule 12 (expression)
+
+
+State 16
+
+    4 whileblock: WHILE '(' condition . ')' whileblockdash
+
+    ')'  shift, and go to state 18
+
+
+State 17
+
+    6 condition: expression . '<' expression
+    7          | expression . '>' expression
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '<'  shift, and go to state 19
+    '>'  shift, and go to state 20
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+
+State 18
+
+    4 whileblock: WHILE '(' condition ')' . whileblockdash
+
+    '{'  shift, and go to state 25
+
+    whileblockdash  go to state 26
+
+
+State 19
+
+    6 condition: expression '<' . expression
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    expression  go to state 27
+
+
+State 20
+
+    7 condition: expression '>' . expression
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    expression  go to state 28
+
+
+State 21
+
+    8 expression: expression '+' . expression
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    expression  go to state 29
+
+
+State 22
+
+    9 expression: expression '-' . expression
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    expression  go to state 30
+
+
+State 23
+
+   10 expression: expression '*' . expression
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    expression  go to state 31
+
+
+State 24
+
+   11 expression: expression '/' . expression
+
+    IDENTIFIER  shift, and go to state 14
+    NUMBER      shift, and go to state 15
+
+    expression  go to state 32
+
+
+State 25
+
+    5 whileblockdash: '{' . block '}'
+
+    WHILE  shift, and go to state 8
+
+    $default  reduce using rule 3 (block)
+
+    block       go to state 33
+    whileblock  go to state 10
+
+
+State 26
+
+    4 whileblock: WHILE '(' condition ')' whileblockdash .
+
+    $default  reduce using rule 4 (whileblock)
+
+
+State 27
+
+    6 condition: expression '<' expression .
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+    $default  reduce using rule 6 (condition)
+
+
+State 28
+
+    7 condition: expression '>' expression .
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+    $default  reduce using rule 7 (condition)
+
+
+State 29
+
+    8 expression: expression . '+' expression
+    8           | expression '+' expression .
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+    '+'       [reduce using rule 8 (expression)]
+    '-'       [reduce using rule 8 (expression)]
+    '*'       [reduce using rule 8 (expression)]
+    '/'       [reduce using rule 8 (expression)]
+    $default  reduce using rule 8 (expression)
+
+
+State 30
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+    9           | expression '-' expression .
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+    '+'       [reduce using rule 9 (expression)]
+    '-'       [reduce using rule 9 (expression)]
+    '*'       [reduce using rule 9 (expression)]
+    '/'       [reduce using rule 9 (expression)]
+    $default  reduce using rule 9 (expression)
+
+
+State 31
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   10           | expression '*' expression .
+   11           | expression . '/' expression
+
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+    '+'       [reduce using rule 10 (expression)]
+    '-'       [reduce using rule 10 (expression)]
+    '*'       [reduce using rule 10 (expression)]
+    '/'       [reduce using rule 10 (expression)]
+    $default  reduce using rule 10 (expression)
+
+
+State 32
+
+    8 expression: expression . '+' expression
+    9           | expression . '-' expression
+   10           | expression . '*' expression
+   11           | expression . '/' expression
+   11           | expression '/' expression .
+
+    '+'  shift, and go to state 21
+    '-'  shift, and go to state 22
+    '*'  shift, and go to state 23
+    '/'  shift, and go to state 24
+
+    '+'       [reduce using rule 11 (expression)]
+    '-'       [reduce using rule 11 (expression)]
+    '*'       [reduce using rule 11 (expression)]
+    '/'       [reduce using rule 11 (expression)]
+    $default  reduce using rule 11 (expression)
+
+
+State 33
+
+    5 whileblockdash: '{' block . '}'
+
+    '}'  shift, and go to state 34
+
+
+State 34
+
+    5 whileblockdash: '{' block '}' .
+
+    $default  reduce using rule 5 (whileblockdash)
