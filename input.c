@@ -1,24 +1,15 @@
 
-
-int fuck(int abc,int ssjs)
+int masjs(int a, int b)
 {
-
-}
-float fuck2()
-{
-
+	int h,h2;
 }
 void main()
 {
-
-		float hi = 7;
-	while(34 > hi)
+	int hh[10];
 	{
-		int a = 5,c = 3	;
-
-
-
+		int inner;
 	}
+	int out  = 83+22	;
 
-
+	int *out2;
 }

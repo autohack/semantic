@@ -796,70 +796,72 @@ return CHAR;
 case 4:
 YY_RULE_SETUP
 #line 14 "my.l"
-return VOID;
+{yylval = "void";
+						return VOID;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 15 "my.l"
-return MAIN;
+#line 17 "my.l"
+{ yylval = "main";
+						return MAIN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 16 "my.l"
+#line 19 "my.l"
 return WHILE;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 17 "my.l"
+#line 20 "my.l"
 return STRUCT;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 18 "my.l"
+#line 21 "my.l"
 return IF;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 19 "my.l"
+#line 22 "my.l"
 return ELSE;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 22 "my.l"
-{yylval = strdup(yytext);
+#line 25 "my.l"
+{yylval = yytext;
 						return IDENTIFIER;};
 	YY_BREAK
 case 11:
-#line 27 "my.l"
+#line 30 "my.l"
 case 12:
-#line 28 "my.l"
+#line 31 "my.l"
 case 13:
 YY_RULE_SETUP
-#line 28 "my.l"
+#line 31 "my.l"
 return NUMBER;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 30 "my.l"
+#line 33 "my.l"
 return yytext[0];
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 32 "my.l"
+#line 35 "my.l"
 ;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 33 "my.l"
+#line 36 "my.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 35 "my.l"
+#line 38 "my.l"
 ECHO;
 	YY_BREAK
-#line 863 "lex.yy.c"
+#line 865 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1860,7 +1862,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 35 "my.l"
+#line 38 "my.l"
 
 
 

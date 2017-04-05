@@ -30,3 +30,5 @@ void enter_func();
 int search_param();
 void enter_param();
 void print_table();
+int  search_vars();
+void enter_vars();

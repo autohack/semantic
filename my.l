@@ -11,15 +11,18 @@ int						{ yylval = "int";
 						  return INT;};
 float					return FLOAT;
 char					return CHAR;
-void					return VOID;
-main					return MAIN;
+void					{yylval = "void";
+						return VOID;}
+
+main					{ yylval = "main";
+						return MAIN;}
 while					return WHILE;
 struct					return STRUCT;
 if  					return IF;
 else					return ELSE;
 
 
-[A-Za-z_][A-Z0a-z0-9_]*	{yylval = strdup(yytext);
+[A-Za-z_][A-Z0a-z0-9_]*	{yylval = yytext;
 						return IDENTIFIER;};
 
 
