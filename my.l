@@ -1,13 +1,14 @@
 %{
 	#include "my.h"
 	#include "y.tab.h"
-	int line = 1;
+	
 
 %}
 
 %%
 
-int						return INT;
+int						{ yylval = "int";
+						  return INT;};
 float					return FLOAT;
 char					return CHAR;
 void					return VOID;
@@ -18,7 +19,8 @@ if  					return IF;
 else					return ELSE;
 
 
-[A-Za-z_][A-Z0a-z0-9_]*	return IDENTIFIER;
+[A-Za-z_][A-Z0a-z0-9_]*	{yylval = strdup(yytext);
+						return IDENTIFIER;};
 
 
 [0-9]+  |
@@ -26,8 +28,10 @@ else					return ELSE;
 "."[0-9]+ 				return NUMBER;
 
 [\[\]\(\)\{\}\;\,\=\+\-\*\/\<\>\!]	return yytext[0];
-[\'][^\']*[\'] 			return STRING;
-\n 						{line++;};
+
+\n 						;
 [ \t]+					/* ignore whitespace */;
 
 %%
+
+

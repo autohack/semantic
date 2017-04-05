@@ -6,7 +6,7 @@
 
 // data defination
 
-struct SymbolTable
+struct symboltable
 {
 	char name[20];
 	char type[20];
@@ -14,14 +14,19 @@ struct SymbolTable
 	struct varlist *local; 
 	int num_params;
 	
-}SymbolTable;
+}symboltable;
 
 struct varlist
 {
-	char id[20];
+	char var_name[20];
 	char type[20];
 	int level;
+	struct varlist *next;
 }varlist;
 
-void yyerror();
-int yywrap();
+
+int  search_func();
+void enter_func();
+int search_param();
+void enter_param();
+void print_table();
