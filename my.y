@@ -1,7 +1,7 @@
 %{
 #include "my.h"
 int level ;
-struct symboltable *active_func_ptr;
+int active_func_num;
 struct symboltable *call_name_ptr;
 struct symboltable st[50];
 char result_type[20];
@@ -28,9 +28,17 @@ int main()
 
 %}
 
-%token 	INT  FLOAT CHAR VOID MAIN WHILE  IDENTIFIER NUMBER STRING IF ELSE STRUCT 
+%union {
+	int num;
+	char *st;
+	char fixstr[100];
+}
+%token <fixstr> INT  FLOAT CHAR VOID MAIN WHILE STRING IF ELSE STRUCT IDENTIFIER
+%token <a_number> NUMBER
 
 
+%type<fixstr> result idd datatype
+%type <num>	 param_list plist
 
 
 
@@ -50,7 +58,7 @@ struct_block:		declaration struct_block | ;
 /*---------------- for function declartion-------------------------------*/
 
 func_decl:			func_head  '{' block '}' {
-												active_func_ptr = NULL;
+												
 												level = 0;
 												
 											} ;
@@ -59,16 +67,17 @@ func_head:			red_id '(' decl_plist ')' {level = 2;
 												st[limit].num_params = param_count;};
 
 red_id:				result IDENTIFIER{	
-										if(search_func($2)) printf("error : same function declared \n");
+
+										if(search_func($2)) printf("error : same function %s declared \n",$2);
 										else enter_func($2,$1);
 										// active_func_ptr = st[limit]; 
 										level = 1;
 										param_count =0;
 									};
 
-result:				INT {$$=$1;}
-					| FLOAT {strcpy(result_type,"real");}
-					| VOID{strcpy(result_type, "void");};
+result:				INT {strcpy($$,$1);}
+					| FLOAT {strcpy($$,$1);}
+					| VOID{strcpy($$,$1);};
 
 decl_plist:			decl_pl | ;
 
@@ -78,7 +87,7 @@ decl_pl:			decl_pl ',' decl_param
 
 decl_param:			datatype IDENTIFIER{
 									if(search_param($2))
-										printf("error: parameter already declared\n");
+										printf("error: parameter, %s already declared\n",$2);
 									else
 										enter_param($2,$1);
 									
@@ -95,7 +104,7 @@ startdash:			void_main '(' ')' '{' block	'}' {printf("\n syntax is correct\n");}
 
 void_main:			VOID MAIN{
 								if(search_func($2)) 
-									printf("error : same function declared \n");
+									printf("error : same %s function declared before \n",$2);
 								else
 									enter_func($2,$1);
 									// active_func_ptr = st[limit]; 
@@ -111,17 +120,38 @@ block:				whileblock block
 					| '{' {level++; } block '}' {level--;} block 
 					| /* e */
 					;
-/* for function call */
-func_call:			IDENTIFIER '(' param_list ')' ';';
+/* --------------for function call --------------------------*/
+func_call:			func_func_call ';';
 
-func_func_call:		IDENTIFIER '(' param_list ')' ;
+func_func_call:		IDENTIFIER '(' param_list ')' {
+													if(!search_func($1))
+														printf("%s function not declared\n",$1);
+													else
+													{
+														// printf("%d\n",$3 );
+														if(st[active_func_num].num_params != $3)
+															printf("mismatch in number of parameters in call and declaration in %s function\n",$1);
 
-param_list:			plist | ;
+													}
 
-plist:				e | e ',' plist;
+												} ;
 
-e:					NUMBER | IDENTIFIER | IDENTIFIER '=' func_func_call | func_func_call | IDENTIFIER '=' IDENTIFIER | IDENTIFIER '=' NUMBER;
+param_list:			plist{$$ = $1;} | {$$ = 0;};
 
+plist:				e {$$ =  1;}| e ',' plist{$$ = $3 + 1;};
+
+e:					NUMBER 
+					| v_id
+					| v_id '=' func_func_call 
+					| func_func_call 
+					| v_id '=' v_id 
+					| v_id '=' NUMBER
+					;
+
+v_id:				IDENTIFIER{
+								if(!search_vars($1)  && !search_param($1))
+									printf("%s is not declared before and using for func call \n",$1 );
+								};
 /*------------------------------------------------------------------------*/
 
 /* ---------if -else------------------*/
@@ -149,15 +179,16 @@ vars_id:			IDENTIFIER '=' exp ;
 /*------------------------------------------------------------------------*/
 
 /*-----------variable declartion ------------------------------*/
-declaration:		datatype vars ';';
+declaration:		datatype{strcpy(result_type,$1);} vars ';';
 
 
-datatype:			INT {strcpy(result_type, "int");}
+datatype:			INT 
 					| FLOAT 
-					| CHAR;
+					| CHAR
+					;
 
 
-vars:				array_id{$$ = $1;}
+vars:				array_id
 					| array_id ',' vars;
 
 array_id:			idd	
@@ -170,10 +201,10 @@ array_id:			idd
 idd:				IDENTIFIER{	
 								
 								if(search_vars($1))
-									printf("found same name var\n");
+									printf("found same name var : %s\n",$1);
 								else if(level == 2 && search_param($1))
 								{
-									printf("found same parameter of function\n");
+									printf("found same parameter :%s  in  function\n",$1);
 								}
 								else
 								{
@@ -227,6 +258,9 @@ funtion calls
 pointer is done
 nested level is done 
 
+semantic :
+	functions done
+
 todo:
 	handle data type char 
 
@@ -245,18 +279,7 @@ void enter_func(char name[] , char type[] )
 	st[limit].local = NULL;
 }
 
-int search_func(char name[])
-{
-	int i = 0;
-	for(i=0;i<limit;i++)
-	{
-		if(!strcmp(st[limit].name,name))
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
+
 void enter_param(char id[],char type[])
 {
 	param_count++;
@@ -355,12 +378,30 @@ int search_param(char id[])
 int search_vars(char id[])
 {
     struct varlist *current = st[limit].local;  // Initialize current
+    struct varlist *temp = st[limit].param;
+
     while (current != NULL)
     {
-        if(!strcmp(current->var_name,id))
+        if(!strcmp(current->var_name,id) && current->level <= level)
             return 1;
         current = current->next;
     }
+
+
     return 0;
 }
 
+int search_func(char name[])
+{
+
+	int i = 0;
+	for(i=0;i<=limit;i++)
+	{
+		if(!strcmp(st[i].name,name))
+		{
+			active_func_num = i;		// for function call
+			return 1;
+		}
+	}
+	return 0;
+}

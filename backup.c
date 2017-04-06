@@ -51,3 +51,20 @@ decl_param:			datatype IDENTIFIER{
 
 int						{ yylval = yytext;
 						  return INT;};
+
+
+						if(!search_func($1))
+														printf("function not declared\n");
+													else
+													{
+														
+													}
+													
+								    while (temp != NULL)
+    {
+        if(!strcmp(current->var_name,id) && current->level <= level)
+            return 1;
+        temp = temp->next;
+    }
+
+

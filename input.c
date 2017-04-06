@@ -1,15 +1,20 @@
-
-int masjs(int a, int b)
+int fuck(int a,float b)
 {
-	int h,h2;
+	int var1;
+	{int var2, bar3;}
+}
+void fuck2(float c)
+{
+	int a,fjjf;
+	fuck(c,a= fuck(c,fjjf));
+	
 }
 void main()
 {
-	int hh[10];
-	{
-		int inner;
-	}
-	int out  = 83+22	;
 
-	int *out2;
+	
+	int var1;
+	int a,b;
+	{int var2, bar3;}
+	
 }

@@ -7,28 +7,25 @@
 
 %%
 
-int						{ yylval = "int";
-						  return INT;};
-float					return FLOAT;
-char					return CHAR;
-void					{yylval = "void";
-						return VOID;}
-
-main					{ yylval = "main";
-						return MAIN;}
-while					return WHILE;
-struct					return STRUCT;
-if  					return IF;
-else					return ELSE;
+int						{ strcpy(yylval.fixstr,"int"); return INT;};
+float					{  strcpy(yylval.fixstr,"float");return FLOAT;};
+char					{ strcpy(yylval.fixstr,"char"); return CHAR;};
+void					{strcpy(yylval.fixstr,"void");return VOID;};
+main					{strcpy(yylval.fixstr,"main");return MAIN;};
+while					{strcpy(yylval.fixstr,"while");return WHILE;};
+struct					{strcpy(yylval.fixstr,"struct");return STRUCT;};
+if  					{strcpy(yylval.fixstr,"if");return IF;};
+else					{strcpy(yylval.fixstr,"else");return ELSE;};
 
 
-[A-Za-z_][A-Z0a-z0-9_]*	{yylval = yytext;
+[A-Za-z_][A-Z0a-z0-9_]*	{strcpy(yylval.fixstr,yytext);
+
 						return IDENTIFIER;};
 
 
 [0-9]+  |
 [0-9]+"."[0-9]+ |
-"."[0-9]+ 				return NUMBER;
+"."[0-9]+ 				{return NUMBER;}
 
 [\[\]\(\)\{\}\;\,\=\+\-\*\/\<\>\!]	return yytext[0];
 

@@ -51,12 +51,12 @@ extern int yydebug;
     VOID = 261,
     MAIN = 262,
     WHILE = 263,
-    IDENTIFIER = 264,
-    NUMBER = 265,
-    STRING = 266,
-    IF = 267,
-    ELSE = 268,
-    STRUCT = 269
+    STRING = 264,
+    IF = 265,
+    ELSE = 266,
+    STRUCT = 267,
+    IDENTIFIER = 268,
+    NUMBER = 269
   };
 #endif
 /* Tokens.  */
@@ -66,16 +66,28 @@ extern int yydebug;
 #define VOID 261
 #define MAIN 262
 #define WHILE 263
-#define IDENTIFIER 264
-#define NUMBER 265
-#define STRING 266
-#define IF 267
-#define ELSE 268
-#define STRUCT 269
+#define STRING 264
+#define IF 265
+#define ELSE 266
+#define STRUCT 267
+#define IDENTIFIER 268
+#define NUMBER 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 31 "my.y" /* yacc.c:1909  */
+
+	int num;
+	char *st;
+	char fixstr[100];
+
+#line 88 "y.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
