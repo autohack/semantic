@@ -24,7 +24,11 @@ struct varlist
 	struct varlist *next;
 }varlist;
 
-
+struct for_struct
+{
+	char name[20];
+	struct varlist *local;
+}for_struct;
 int  search_func();
 void enter_func();
 int search_param();
@@ -32,3 +36,6 @@ void enter_param();
 void print_table();
 int  search_vars();
 void enter_vars();
+int search_struct();
+void enter_in_struct();
+int search_in_struct_var();

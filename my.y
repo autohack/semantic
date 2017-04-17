@@ -4,10 +4,12 @@ int level ;
 int active_func_num;
 struct symboltable *call_name_ptr;
 struct symboltable st[50];
+struct for_struct fs[10];
 char result_type[20];
-char id_type[20];
 int param_count = 0;
 int limit=-1;
+int total_struct=-1;
+int struct_flag = 0;
 
 void yyerror (const char *str)
 {
@@ -48,7 +50,17 @@ start:				start startdash | startdash | func_decl | struct_decl |start func_decl
 
 /* -------------------for struct declartion ----------------------*/
 
-struct_decl:		STRUCT IDENTIFIER '{' struct_block '}' vars';' ;
+struct_decl:		STRUCT IDENTIFIER '{'{struct_flag=1;} struct_block {struct_flag=0;}'}' ';' {
+
+																	if(search_struct($2))
+																		printf("%s struct declared before\n",$2 );
+																	else
+																	{
+																		total_struct++;
+																		strcpy(fs[total_struct].name,$2);
+																		
+																	}
+																};
 
 
 struct_block:		declaration struct_block | ;
@@ -198,18 +210,23 @@ array_id:			idd
 					| '*' idd
 					;
 
-idd:				IDENTIFIER{	
-								
-								if(search_vars($1))
-									printf("found same name var : %s\n",$1);
-								else if(level == 2 && search_param($1))
+idd:				IDENTIFIER{	if(struct_flag==0)
 								{
-									printf("found same parameter :%s  in  function\n",$1);
+								
+									if(search_vars($1))
+										printf("found same name var : %s\n",$1);
+									else if(level == 2 && search_param($1))
+										printf("found same parameter :%s  in  function\n",$1);
+									else
+										enter_vars($1);
 								}
 								else
 								{
-									// printf("in idd:%d where IDENTIFIER = %s\n",limit,$1);
-									enter_vars($1);
+									if(search_in_struct_var($1))
+										printf("found same name var in struct  : %s\n",$1);
+									else
+										enter_in_struct($1);
+
 								}
 
 
@@ -404,4 +421,61 @@ int search_func(char name[])
 		}
 	}
 	return 0;
+}
+
+int search_struct(char name[])
+{
+
+	int i = 0;
+	for(i=0;i<=total_struct;i++)
+	{
+		if(!strcmp(fs[i].name,name))
+		{		
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void enter_in_struct(char id[])
+{
+	// printf("%s --- %d\n", id,level);
+	struct varlist *new_node,*temp;
+
+	new_node= malloc(sizeof(struct varlist));
+
+	
+ 	strcpy(new_node->var_name,id);
+ 	strcpy(new_node->type,result_type);
+ 	new_node->level = 0;
+ 	new_node->next=NULL;
+
+	if(fs[total_struct].local==NULL)
+	{
+	   fs[total_struct].local=new_node;
+	}
+ 	else
+ 	{
+	   	temp = fs[total_struct].local;
+	    while(temp->next!=NULL)
+	    {
+	    	temp = temp->next;
+	    }
+	   temp->next = new_node;
+ 	}
+ 	// printf("%s done\n",st[limit].local->var_name);
+}
+int search_in_struct_var(char id[])
+{
+	struct varlist *current = fs[total_struct].local;  // Initialize current
+
+    while (current != NULL)
+    {
+        if(!strcmp(current->var_name,id))
+            return 1;
+        current = current->next;
+    }
+
+
+    return 0;
 }

@@ -1,3 +1,15 @@
+struct book
+{
+	int ssks,dd;
+};
+struct book2
+{
+	int ssks,dd;
+	int dd2;
+};
+
+
+
 int fuck(int a,float b)
 {
 	int var1;
@@ -12,9 +24,10 @@ void fuck2(float c)
 void main()
 {
 
-	
-	int var1;
-	int a,b;
+	int c;
+	int a;
 	{int var2, bar3;}
+	
+
 	
 }
