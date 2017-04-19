@@ -27,7 +27,7 @@ else					{strcpy(yylval.fixstr,"else");return ELSE;};
 [0-9]+"."[0-9]+ |
 "."[0-9]+ 				{return NUMBER;}
 
-[\[\]\(\)\{\}\;\,\=\+\-\*\/\<\>\!]	return yytext[0];
+[\&\|\[\]\(\)\{\}\;\,\=\+\-\*\/\<\>\!]	return yytext[0];
 
 \n 						;
 [ \t]+					/* ignore whitespace */;

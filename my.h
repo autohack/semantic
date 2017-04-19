@@ -21,6 +21,7 @@ struct varlist
 	char var_name[20];
 	char type[20];
 	int level;
+	int e_type;// 1- normal 2- array 3- pointer
 	struct varlist *next;
 }varlist;
 

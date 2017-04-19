@@ -10,6 +10,7 @@ int param_count = 0;
 int limit=-1;
 int total_struct=-1;
 int struct_flag = 0;
+int e_type = 0;
 
 void yyerror (const char *str)
 {
@@ -40,7 +41,7 @@ int main()
 
 
 %type<fixstr> result idd datatype
-%type <num>	 param_list plist
+%type <num>	 param_list plist term factor pm_exp d_exp or_exp exp lhs
 
 
 
@@ -98,10 +99,11 @@ decl_pl:			decl_pl ',' decl_param
 
 
 decl_param:			datatype IDENTIFIER{
-									if(search_param($2))
-										printf("error: parameter, %s already declared\n",$2);
-									else
-										enter_param($2,$1);
+										e_type = 1;
+										if(search_param($2))
+											printf("error: parameter, %s already declared\n",$2);
+										else
+											enter_param($2,$1);
 									
 								};	
 
@@ -160,34 +162,52 @@ e:					NUMBER
 					| v_id '=' NUMBER
 					;
 
-v_id:				IDENTIFIER{
-								if(!search_vars($1)  && !search_param($1))
-									printf("%s is not declared before and using for func call \n",$1 );
-								};
+v_id:				IDENTIFIER{	
+								int f = search_vars($1);
+								if(f==0)
+								{
+									f = search_param($1);
+									if(!(level==2 && f!=0))
+									{
+										printf("%s is not declared before and using for func call \n",$1 );
+									}
+								}
+							};
 /*------------------------------------------------------------------------*/
 
 /* ---------if -else------------------*/
-ifblock:			IF '(' condition ')' '{' block '}' 
-					| IF '(' condition ')' '{' block '}' ELSE '{' block '}';
+ifblock:			IF '(' exp ')' '{' block '}' 
+					| IF '(' exp ')' '{' block '}' ELSE '{' block '}';
 
-condition:			cid	'<'	cid 
-					| cid '>' cid
-					| cid '>' '=' cid
-					| cid '<' '=' cid
-					| cid '!' '=' cid
-					;
 
-cid:				IDENTIFIER | exp;
 
 /*------------while loop------------------------------*/
-whileblock:			WHILE  '(' condition ')'	'{' block '}';
+whileblock:			WHILE  '(' exp ')'	'{' block '}';
 
 /*------------define variables -------------------------*/
 define:				define_vars ';';
 
 define_vars:		vars_id | vars_id ',' define_vars;
 
-vars_id:			IDENTIFIER '=' exp ;
+vars_id:			lhs '=' exp { if($1 !=1 || $3 != 1)
+									printf("error : type mismatch of operands in assigment statement\n");
+								};
+
+lhs:				IDENTIFIER{	
+								int f = search_vars($1);
+								if(f==0)
+								{
+									f = search_param($1);
+									if(!(level==2 && f!=0))
+									{
+										printf("error: %s is not defined earlier\n",$1 );
+										$$ = -1;
+									}
+								}
+								else
+									$$ = f;
+
+								};
 /*------------------------------------------------------------------------*/
 
 /*-----------variable declartion ------------------------------*/
@@ -203,19 +223,24 @@ datatype:			INT
 vars:				array_id
 					| array_id ',' vars;
 
-array_id:			idd	
-					| idd '=' exp
-					| idd br_dimlist
-					| idd br_dimlist '=' '{' numlist '}'
-					| '*' idd
+array_id:			idd
+					| idd '=' exp 
+					| idd2 br_dimlist 
+					| idd2 br_dimlist '=' '{' numlist '}' 
+					| '*' idd3 
 					;
 
-idd:				IDENTIFIER{	if(struct_flag==0)
+
+
+idd:				IDENTIFIER{	e_type = 1;
+								if(struct_flag==0)
 								{
-								
-									if(search_vars($1))
+									int f = search_vars($1); int f2 = search_param($1);
+									if(f != 0)
 										printf("found same name var : %s\n",$1);
-									else if(level == 2 && search_param($1))
+
+									
+									else if(level == 2 && f2 !=0 )
 										printf("found same parameter :%s  in  function\n",$1);
 									else
 										enter_vars($1);
@@ -229,9 +254,55 @@ idd:				IDENTIFIER{	if(struct_flag==0)
 
 								}
 
+							};
+
+idd2:				IDENTIFIER{	e_type = 2;
+								if(struct_flag==0)
+								{
+									int f = search_vars($1); int f2 = search_param($1);
+									if(f != 0)
+										printf("found same name var : %s\n",$1);
+									
+									else if(level == 2 && f2 !=0 )
+										printf("found same parameter :%s  in  function\n",$1);
+									else
+										enter_vars($1);
+								}
+								else
+								{
+									if(search_in_struct_var($1))
+										printf("found same name var in struct  : %s\n",$1);
+									else
+										enter_in_struct($1);
+
+								}
+
+							};
 
 
-}
+idd3:				IDENTIFIER{	e_type = 3;
+								if(struct_flag==0)
+								{
+									int f = search_vars($1); int f2 = search_param($1);
+									if(f != 0)
+										printf("found same name var : %s\n",$1);
+									
+									else if(level == 2 && f2 !=0 )
+										printf("found same parameter :%s  in  function\n",$1);
+									else
+										enter_vars($1);
+								}
+								else
+								{
+									if(search_in_struct_var($1))
+										printf("found same name var in struct  : %s\n",$1);
+									else
+										enter_in_struct($1);
+
+								}
+
+							};
+
 numlist:			exp | exp ',' numlist;
 
 br_dimlist:			'[' NUMBER ']' | '[' NUMBER ']' br_dimlist ;
@@ -240,20 +311,143 @@ br_dimlist:			'[' NUMBER ']' | '[' NUMBER ']' br_dimlist ;
 
 
 /*------------ Expression-------------------*/ 
+exp:				or_exp '|' '|' exp { if($1 !=1 || $4 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+											}
+					| or_exp
+					;
 
+or_exp:				d_exp '&' '&' or_exp  { if($1 !=1 || $4 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+											}
+					| d_exp
+					;
 
-exp:				factor
-					| exp '+' factor
-					| exp '-' factor
+d_exp:				pm_exp
+					| pm_exp '>' pm_exp { if($1 !=1 || $3 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+										}
+					| pm_exp '!' '=' pm_exp{ if($1 !=1 || $4 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+											}
+					| pm_exp '=' '=' pm_exp{ if($1 !=1 || $4 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+											}
+					| pm_exp '<' pm_exp{ if($1 !=1 || $3 != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											$$ = -1;
+										}
+										else
+											$$ = 1;
+									}
+					| pm_exp '<' '=' pm_exp{ if($1 !=1 || $4 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+											}
+
+					| pm_exp '>' '=' pm_exp{ if($1 !=1 || $4 != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												$$ = -1;
+											}
+											else
+												$$ = 1;
+											}
+					| '!' '(' exp ')'{$$ = $3;}
+					;
+
+			
+
+pm_exp:				factor	
+					| pm_exp '+' factor{ if($1 !=1 || $3 != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											$$ = -1;
+										}
+										else
+											$$ = 1;
+										}
+					| pm_exp '-' factor{ if($1 !=1 || $3 != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											$$ = -1;
+										}
+										else
+											$$ = 1;
+										}
+					| '-' factor {$$ = $2;}
 					;
 
 factor:				term
-					|factor '*' term
-					| factor '/' term;
+					|factor '*' term { if($1 !=1 || $3 != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											$$ = -1;
+										}
+										else
+											$$ = 1;
+										}
+					| factor '/' term{ if($1 !=1 || $3 != 1)
+										{
+											$$ = -1;
+											printf("error : type mismatch in expersion\n");
+										}
+										else
+											$$ = 1;
+										}
+					;
 
-term:				NUMBER
-					| '(' exp ')'
-					| '-' term;
+term:				NUMBER{$$ = 1;}
+					| IDENTIFIER{	
+									int f = search_vars($1);
+									
+									if(f==0)
+									{
+										f = search_param($1);
+										if(!(level==2 && f!=0))
+										{
+											printf("error: %s is not defined earlier\n",$1 );
+											$$ = -1;
+										}
+									}
+									else
+										$$ = f;
+
+								}
+
+					/*| func_func_call*/
+					| '(' exp ')' { $$ = $2;}
+					;
 
 
 /*
@@ -274,6 +468,9 @@ function
 funtion calls
 pointer is done
 nested level is done 
+Variable declaration checking
+Type checking should include type coercibility and operator compatibility.
+Scope checking
 
 semantic :
 	functions done
@@ -309,6 +506,7 @@ void enter_param(char id[],char type[])
  	strcpy(new_node->type,type);
  	new_node->level = 1;
  	new_node->next=NULL;
+ 	new_node->e_type = e_type;
 
 	if(st[limit].param==NULL)
 	{
@@ -336,7 +534,7 @@ void enter_vars(char id[])
  	strcpy(new_node->type,result_type);
  	new_node->level = level;
  	new_node->next=NULL;
-
+ 	new_node->e_type = e_type;
 	if(st[limit].local==NULL)
 	{
 	   st[limit].local=new_node;
@@ -367,14 +565,14 @@ void print_table()
 		printf("parmas:");
 		while(temp!=NULL)
 		{
-			printf("%s-%s-%d\t",temp->var_name,temp->type,temp->level);
+			printf("%s-%s-%d-%d\t",temp->var_name,temp->type,temp->level,temp->e_type);
 			temp = temp->next;
 		}
 		temp = st[i].local;
 		printf("local:");
 		while(temp!=NULL)
 		{
-			printf("%s-%s-%d\t",temp->var_name,temp->type,temp->level);
+			printf("%s-%s-%d-%d\t",temp->var_name,temp->type,temp->level , temp->e_type);
 			temp = temp->next;
 		}
 		printf("\n");
@@ -386,7 +584,7 @@ int search_param(char id[])
     while (current != NULL)
     {
         if(!strcmp(current->var_name,id))
-            return 1;
+            return (current->e_type);
         current = current->next;
     }
     return 0;
@@ -400,7 +598,7 @@ int search_vars(char id[])
     while (current != NULL)
     {
         if(!strcmp(current->var_name,id) && current->level <= level)
-            return 1;
+            return (current->e_type);
         current = current->next;
     }
 

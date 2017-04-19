@@ -1,33 +1,20 @@
-struct book
+int fuck(int a , int b)
 {
-	int ssks,dd;
-};
-struct book2
-{
-	int ssks,dd;
-	int dd2;
-};
-
-
-
-int fuck(int a,float b)
-{
-	int var1;
-	{int var2, bar3;}
+	int *p;
+	int k[10];
 }
-void fuck2(float c)
-{
-	int a,fjjf;
-	fuck(c,a= fuck(c,fjjf));
-	
-}
+
 void main()
 {
 
 	int c;
-	int a;
-	{int var2, bar3;}
-	
+	float *p;
+	char s[10][10];
+	int *a;
+	int k;
+	c = 4;
+	c = k;
+	c = b;
 
 	
 }
