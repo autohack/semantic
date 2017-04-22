@@ -8,13 +8,8 @@ void main()
 {
 
 	int c;
-	float *p;
-	char s[10][10];
-	int *a;
-	int k;
-	c = 4;
-	c = k;
-	c = b;
-
+	int b;
+	int a;
+	a = 2 * 7;
 	
 }
