@@ -78,13 +78,17 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 34 "my.y" /* yacc.c:1909  */
+#line 43 "backup.y" /* yacc.c:1909  */
 
 	int num;
 	char *st;
 	char fixstr[100];
+	expression * expr;
+	vector<int> *vec;
+	while_ex *wex;
+	
 
-#line 88 "y.tab.h" /* yacc.c:1909  */
+#line 92 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

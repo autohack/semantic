@@ -1,3 +1,5 @@
+%option noyywrap
+
 %{
 	#include "my.h"
 	#include "y.tab.h"
@@ -25,7 +27,8 @@ else					{strcpy(yylval.fixstr,"else");return ELSE;};
 
 [0-9]+  |
 [0-9]+"."[0-9]+ |
-"."[0-9]+ 				{return NUMBER;}
+"."[0-9]+ 				{  strcpy(yylval.fixstr,yytext);
+							return NUMBER;}
 
 [\&\|\[\]\(\)\{\}\;\,\=\+\-\*\/\<\>\!]	return yytext[0];
 

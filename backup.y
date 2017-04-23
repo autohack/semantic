@@ -10,7 +10,7 @@ int param_count = 0;
 int limit=-1;
 int total_struct=-1;
 int struct_flag = 0;
-int e_type = 0;		// simple = 1 ; array = 2 ; pointer = 3
+int e_type = 0;		// simple = 1 ; array = 2 ; pointer = 3 ; struct - 4 ; struct array - 5 ; struct pointer - 6;
 int for_array[10]; // storing array indexes locally 
 // intermediate starts
 char quadcode[100];
@@ -46,16 +46,17 @@ int main()
 	char fixstr[100];
 	expression * expr;
 	vector<int> *vec;
+	while_ex *wex;
 	
 }
 %token <fixstr> INT  FLOAT CHAR VOID MAIN WHILE STRING IF ELSE STRUCT IDENTIFIER NUMBER
 
 
-%type<vec> block  vars_id define n_var
+%type<vec> block  define n_var ifblock whileblock vars_id
 %type<fixstr> result idd datatype  idd2 idd3
 %type <num>	 param_list plist   br_dimlist ifexp m_var 
-%type<expr> term factor pm_exp d_exp or_exp exp lhs
-
+%type<expr> term factor pm_exp d_exp or_exp exp lhs 
+%type<wex> whileexp
 
 %%
 
@@ -78,6 +79,8 @@ struct_decl:		STRUCT IDENTIFIER '{'{struct_flag=1;} struct_block {struct_flag=0;
 
 struct_block:		declaration struct_block | ;
 
+
+
 /*------------------------------------------------------------------------*/
 
 /*---------------- for function declartion-------------------------------*/
@@ -85,13 +88,9 @@ struct_block:		declaration struct_block | ;
 func_decl:			func_head  '{' block '}' {
 												
 												level = 0;
-												// intermideate starts
-													// backpatch(*$2, nextquad);
-													// quadruple q;
-													// q.s1 = "func end";
-													// q.a1 = q.s2 = q.a2 = q.s3 = q.a3 = q.s4 = "";
-													// generate(q);
-												// ends
+												char buffer[100];
+												sprintf(buffer,"func end");
+												generate(buffer);
 											} ;
 
 func_head:			red_id '(' decl_plist ')' {level = 2;
@@ -103,8 +102,11 @@ red_id:				result IDENTIFIER{
 										else 
 											{
 												enter_func($2,$1);
+												char buffer[100];
+												sprintf(buffer,"func begin %s",$2);
+												generate(buffer);
 											}
-										// active_func_ptr = st[limit]; 
+										
 										level = 1;
 										param_count =0;
 									};
@@ -126,7 +128,7 @@ decl_param:			datatype IDENTIFIER{
 										else
 											enter_param($2,$1);
 									
-								};	
+										};	
 
 
 
@@ -135,58 +137,57 @@ decl_param:			datatype IDENTIFIER{
 
 /* main function */
 
-startdash:			void_main '(' ')' '{' block	'}' {printf("\n syntax is correct\n");};
+startdash:			void_main '(' ')' '{' block	'}' { 	char buffer[100];
+														sprintf(buffer,"func end");
+														generate(buffer);
+														printf("\n syntax is correct\n");
+													};
 
 void_main:			VOID MAIN{
 								if(search_func($2)) 
 									printf("error : same %s function declared before \n",$2);
 								else
+								{
 									enter_func($2,$1);
+									char buffer[100];
+									sprintf(buffer,"func begin main");
+									generate(buffer);
+									
+								}
 									// active_func_ptr = st[limit]; 
 									level = 2;
 							};
 /* body insite the function */
 
-block:				whileblock block 
-					| declaration block 
-					| '{' define '}' {
-								$$ = new vector<int>;
-								(*$$) = (*$2);		//
-    							}
+block:				whileblock{backpatch((*$1),nextquad);} block {$$ = new vector<int>;}
+					| declaration block {$$ = new vector<int>;}
+					| ifblock {backpatch((*$1),nextquad);}block{$$ = new vector<int>;}
 
-    				| vars_id {
-
-    					$$ = new vector<int> ;
-    				}
-
-
-					| ifexp  block  {
-											$$ = new vector<int>;
-											// printf("ffffff\n");
-											(*$$).push_back($1);
-											merger((*$$),(*$2));	
-											backpatch((*$$),nextquad);
-										}
-
-					| ifexp  block n_var ELSE m_var  block 
-
-
-					| func_call block
-					| '{' {level++; } block '}' {level--;} block 
+					| func_call block{$$ = new vector<int>;}
+					| define block{$$ = new vector<int>;}
+					| '{' {level++; } block '}' {level--;} block {$$ = new vector<int>;}
 					| /* e */{$$ = new vector<int>;}
 					;
 /* --------------for function call --------------------------*/
-func_call:			func_func_call ';';
+func_call:			func_func_call ';' ;
 
-func_func_call:		IDENTIFIER '(' param_list ')' {
+func_func_call:		IDENTIFIER '(' param_list ')' {	
 													if(!search_func($1))
+													{
 														printf("%s function not declared\n",$1);
+													}
 													else
 													{
 														// printf("%d\n",$3 );
 														if(st[active_func_num].num_params != $3)
 															printf("mismatch in number of parameters in call and declaration in %s function\n",$1);
-
+														else{
+															char *var = nextvar();
+															char buffer[100];
+															// sprintf(buffer,"refparam  %s",var);
+															sprintf(buffer,"call %s %d",$1,$3+1);
+															generate(buffer);
+														}
 													}
 
 												} ;
@@ -194,6 +195,27 @@ func_func_call:		IDENTIFIER '(' param_list ')' {
 param_list:			plist{$$ = $1;} | {$$ = 0;};
 
 plist:				e {$$ =  1;}| e ',' plist{$$ = $3 + 1;};
+
+e: 					exp{	
+							char buffer[100];
+							sprintf(buffer,"param  %s",$1->value);
+							generate(buffer);
+
+
+						};
+/*					| lhs '=' exp{
+									if($1->type !=1 || $3->type != 1)
+										printf("error : type mismatch of operands in assigment statement\n");
+									else
+									{
+
+										char buffer[50];
+										sprintf(buffer,"%s := %s ",$1->value , $3->value);
+										
+										generate(buffer);
+									}
+							};
+
 
 e:					NUMBER 
 					| v_id
@@ -213,17 +235,31 @@ v_id:				IDENTIFIER{
 										printf("%s is not declared before and using for func call \n",$1 );
 									}
 								}
-							};
+							}; */
 /*------------------------------------------------------------------------*/
 
 /* ---------if -else------------------*/
 // ifblock:			
+ifblock:			ifexp '{' block '}' {
+											$$ = new vector<int>;
+											(*$$).push_back($1);
+											merger((*$$),(*$3));	
+											// backpatch((*$$),nextquad);
+										}
+
+					| ifexp  '{' block'}' n_var ELSE m_var  '{' block '}' {
+																			$$  = new vector<int>;
+																			global_table[$1].gotonum = $7;
+																			merger((*$$),(*$3));
+																			merger((*$$),(*$5));
+																			merger((*$$),(*$9));
+																			};
 
 
 
 ifexp:				IF '(' exp ')'
 								{
-									printf("inside ifexp\n");
+									
 									$$ = nextquad;
 									char buffer[100];
 									sprintf(buffer,"if %s <=0 ",$3->value);
@@ -231,7 +267,11 @@ ifexp:				IF '(' exp ')'
 								};
 
 n_var: {
-
+			$$ = new vector<int>;
+			(*$$).push_back(nextquad);
+			char buffer[100];
+			sprintf(buffer," ");
+			generate(buffer);
 		};
 
 m_var: {
@@ -239,17 +279,30 @@ m_var: {
 
 		};
 /*------------while loop------------------------------*/
-whileblock:			WHILE  '(' exp ')'	'{' block '}';
+whileblock:			whileexp	'{' block '}' {	
+												strcpy(global_table[nextquad].s, " ");
+												global_table[nextquad].gotonum = $1->begin;
+												nextquad = nextquad + 1;
+												backpatch((*$3),$1->begin);
+												$$ = new vector<int>;
+												(*$$) = ($1->false_list);
+												};
+
+
+whileexp:		WHILE  m_var '(' exp ')' {	
+											$$ = new while_ex;
+											($$->false_list).push_back(nextquad);
+											char buffer[50];
+											sprintf(buffer,"if %s <= 0", $4->value);
+											generate(buffer);
+											$$->begin = $2;
+
+											};
 
 /*------------define variables -------------------------*/
-define:			define ';' m_var block{
-											printf("ffffffff\n");
-											$$ = new vector<int>;
-											backpatch(*$1,$3);
-											(*$$) = (*$4);
-										}
-				| block
-				;
+define : 		vars_id{//$1 = new vector<int> ;
+						//(*$$) = (*$1);
+						};
 
 
 
@@ -264,7 +317,36 @@ vars_id:			lhs '=' exp ';' {
 										
 										generate(buffer);
 									}
-								};
+									$$ = new vector<int>;
+								}
+
+					| lhs '=' '&' IDENTIFIER ';'{	
+												$$ = new vector<int>;
+												int f = search_vars($4);
+												if(f==0)
+												{
+													f = search_param($4);
+													if(!(level==2 && f!=0))
+													{
+														printf("error: %s is not defined earlier\n",$4 );
+														f = -1;
+													}
+												}
+												else
+												{
+													if($1->type ==3 && f == 1)
+													{
+														char buffer[50];
+														sprintf(buffer,"%s :=  &%s ",$1->value , $4);
+														
+														generate(buffer);
+													}
+													else{
+														printf("error : type mismatch of operands in assigment statement\n");	
+													}
+												}
+
+											};
 
 lhs:				IDENTIFIER{	$$ = new expression;
 								int f = search_vars($1);
@@ -314,6 +396,22 @@ declaration:		datatype{strcpy(result_type,$1);} vars ';';
 datatype:			INT 
 					| FLOAT 
 					| CHAR
+					| STRUCT IDENTIFIER{
+
+										if(search_struct($2))
+										{
+											e_type = 4;
+											strcat($1,"_");
+											strcat($1,$2);
+											strcpy($$,$1);
+										}
+										else
+										{
+											printf("error: struct name %s is undeclared  \n",$2 );
+										}
+								
+								
+					}
 					;
 
 
@@ -342,18 +440,28 @@ array_id:			idd
 
 
 idd:				IDENTIFIER{	strcpy($$,$1);
-								e_type = 1;
+								if(e_type==4)
+									e_type = 4;
+								else
+									e_type = 1;
+
 								if(struct_flag==0)
 								{
 									int f = search_vars($1); int f2 = search_param($1);
 									if(f != 0)
+									{
 										printf("found same name var : %s\n",$1);
+									}
 
 									
 									else if(level == 2 && f2 !=0 )
+									{
 										printf("found same parameter :%s  in  function\n",$1);
+									}
 									else
+									{
 										enter_vars($1);
+									}
 								}
 								else
 								{
@@ -367,7 +475,11 @@ idd:				IDENTIFIER{	strcpy($$,$1);
 							};
 
 idd2:				IDENTIFIER{	strcpy($$,$1);
-								e_type = 2;
+								if(e_type==4)
+									e_type = 5;
+								else
+									e_type = 2;
+								
 								if(struct_flag==0)
 								{
 									int f = search_vars($1); int f2 = search_param($1);
@@ -391,7 +503,10 @@ idd2:				IDENTIFIER{	strcpy($$,$1);
 							};
 
 
-idd3:				IDENTIFIER{	e_type = 3;
+idd3:				IDENTIFIER{	if(e_type==4)
+									e_type = 6;
+								else
+									e_type = 3;
 								strcpy($$,$1);
 								if(struct_flag==0)
 								{
@@ -1029,15 +1144,15 @@ void icprint()
 {
 	int i;
 	printf("printing Three Address Code \n");
-	for(i=0;i<=nextquad;i++)
+	for(i=0;i<nextquad;i++)
 	{
 		if(global_table[i].gotonum == -1)
 		{
-			printf("%s\n",global_table[i].s );
+			printf("%d\t %s\n",i,global_table[i].s );
 		}
 		else
 		{
-			printf("%s %d\n",global_table[i].s , global_table[i].gotonum);
+			printf("%d\t %s goto  %d\n",i,global_table[i].s , global_table[i].gotonum);
 		}
 	}
 }

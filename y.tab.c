@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "my.y" /* yacc.c:339  */
+#line 1 "backup.y" /* yacc.c:339  */
 
 #include "my.h"
 int level ;
@@ -75,27 +75,36 @@ int param_count = 0;
 int limit=-1;
 int total_struct=-1;
 int struct_flag = 0;
-int e_type = 0;
+int e_type = 0;		// simple = 1 ; array = 2 ; pointer = 3 ; struct - 4 ; struct array - 5 ; struct pointer - 6;
+int for_array[10]; // storing array indexes locally 
+// intermediate starts
+char quadcode[100];
+quadraple global_table[100000];
+int nextquad = 0;
+int varcount = 1;
+// ends here
+
+extern int yylex();
+extern int yyparse();
+extern int yyerror();
 
 void yyerror (const char *str)
 {
 	fprintf(stderr, "error: %s\n", str);		// error function
 }
 
-int yywrap() 
-{
-	return 1;
-}
+
 // main function 
 int main() 
 {
 	yyparse(); // calling parse funtion 
 	print_table();
+	icprint();
 	
 }
 
 
-#line 99 "y.tab.c" /* yacc.c:339  */
+#line 108 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -163,13 +172,17 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 34 "my.y" /* yacc.c:355  */
+#line 43 "backup.y" /* yacc.c:355  */
 
 	int num;
 	char *st;
 	char fixstr[100];
+	expression * expr;
+	vector<int> *vec;
+	while_ex *wex;
+	
 
-#line 173 "y.tab.c" /* yacc.c:355  */
+#line 186 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -186,7 +199,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 190 "y.tab.c" /* yacc.c:358  */
+#line 203 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -428,16 +441,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  15
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   183
+#define YYLAST   167
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  33
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  46
+#define YYNNTS  50
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  96
+#define YYNRULES  97
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  180
+#define YYNSTATES  182
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -454,16 +467,16 @@ static const yytype_uint8 yytranslate[] =
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    28,     2,     2,     2,     2,    26,     2,
-      18,    19,    22,    30,    20,    31,     2,    32,     2,     2,
+       2,     2,     2,    28,     2,     2,     2,     2,    22,     2,
+      18,    19,    23,    30,    20,    31,     2,    32,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,    17,
       29,    21,    27,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    23,     2,    24,     2,     2,     2,     2,     2,     2,
+       2,    24,     2,    25,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    15,    25,    16,     2,     2,     2,     2,
+       2,     2,     2,    15,    26,    16,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -484,16 +497,16 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    50,    50,    50,    50,    50,    50,    50,    54,    54,
-      54,    67,    67,    73,    79,    82,    91,    92,    93,    95,
-      95,    97,    98,   101,   117,   119,   129,   130,   131,   132,
-     133,   134,   134,   134,   135,   138,   140,   153,   153,   155,
-     155,   157,   158,   159,   160,   161,   162,   165,   179,   180,
-     185,   188,   190,   190,   192,   196,   214,   214,   217,   218,
-     219,   223,   224,   226,   227,   228,   229,   230,   235,   259,
-     283,   306,   306,   308,   308,   314,   322,   325,   333,   336,
-     337,   345,   353,   361,   369,   378,   386,   391,   392,   400,
-     408,   411,   412,   420,   430,   431,   449
+       0,    63,    63,    63,    63,    63,    63,    63,    67,    67,
+      67,    80,    80,    88,    96,    99,   114,   115,   116,   118,
+     118,   120,   121,   124,   140,   146,   162,   162,   163,   164,
+     164,   166,   167,   168,   168,   168,   169,   172,   174,   195,
+     195,   197,   197,   199,   243,   250,   260,   269,   277,   282,
+     292,   303,   309,   323,   351,   370,   393,   393,   396,   397,
+     398,   399,   418,   419,   421,   422,   423,   432,   437,   442,
+     477,   506,   533,   533,   535,   539,   547,   556,   559,   568,
+     571,   578,   594,   610,   626,   642,   660,   676,   688,   695,
+     712,   730,   741,   749,   770,   794,   800,   823
 };
 #endif
 
@@ -504,15 +517,16 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "INT", "FLOAT", "CHAR", "VOID", "MAIN",
   "WHILE", "STRING", "IF", "ELSE", "STRUCT", "IDENTIFIER", "NUMBER", "'{'",
-  "'}'", "';'", "'('", "')'", "','", "'='", "'*'", "'['", "']'", "'|'",
-  "'&'", "'>'", "'!'", "'<'", "'+'", "'-'", "'/'", "$accept", "start",
+  "'}'", "';'", "'('", "')'", "','", "'='", "'&'", "'*'", "'['", "']'",
+  "'|'", "'>'", "'!'", "'<'", "'+'", "'-'", "'/'", "$accept", "start",
   "struct_decl", "$@1", "$@2", "struct_block", "func_decl", "func_head",
   "red_id", "result", "decl_plist", "decl_pl", "decl_param", "startdash",
-  "void_main", "block", "$@3", "$@4", "func_call", "func_func_call",
-  "param_list", "plist", "e", "v_id", "ifblock", "whileblock", "define",
-  "define_vars", "vars_id", "lhs", "declaration", "$@5", "datatype",
-  "vars", "array_id", "idd", "idd2", "idd3", "numlist", "br_dimlist",
-  "exp", "or_exp", "d_exp", "pm_exp", "factor", "term", YY_NULLPTR
+  "void_main", "block", "$@3", "$@4", "$@5", "$@6", "func_call",
+  "func_func_call", "param_list", "plist", "e", "ifblock", "ifexp",
+  "n_var", "m_var", "whileblock", "whileexp", "define", "vars_id", "lhs",
+  "declaration", "$@7", "datatype", "vars", "array_id", "idd", "idd2",
+  "idd3", "numlist", "br_dimlist", "exp", "or_exp", "d_exp", "pm_exp",
+  "factor", "term", YY_NULLPTR
 };
 #endif
 
@@ -523,17 +537,17 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   123,   125,    59,    40,    41,
-      44,    61,    42,    91,    93,   124,    38,    62,    33,    60,
+      44,    61,    38,    42,    91,    93,   124,    62,    33,    60,
       43,    45,    47
 };
 # endif
 
-#define YYPACT_NINF -100
+#define YYPACT_NINF -101
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-100)))
+  (!!((Yystate) == (-101)))
 
-#define YYTABLE_NINF -70
+#define YYTABLE_NINF -71
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -542,24 +556,25 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      85,  -100,  -100,    31,    28,    68,  -100,  -100,    37,    40,
-      49,  -100,    47,  -100,    52,  -100,  -100,  -100,  -100,    51,
-      89,  -100,    54,  -100,  -100,  -100,  -100,    63,    80,    81,
-    -100,    86,    51,    84,    51,    51,    51,    87,    83,    88,
-      51,  -100,    91,    92,  -100,    93,    90,    89,     2,     2,
-      30,    51,  -100,  -100,  -100,  -100,  -100,  -100,  -100,    94,
-       2,  -100,    13,  -100,    89,  -100,    51,  -100,    89,  -100,
-    -100,     2,    96,     9,    97,    95,    82,    56,    25,  -100,
-      98,    81,  -100,  -100,   100,  -100,   101,   102,    99,  -100,
-    -100,  -100,   103,   109,   107,   105,   106,   108,  -100,   112,
-     113,  -100,   111,     2,    25,   117,   110,   114,   115,     0,
-     116,    32,     9,     9,     9,     9,   118,  -100,    30,    62,
-    -100,  -100,  -100,  -100,    13,     2,   120,   121,  -100,   122,
-    -100,   119,    51,     2,     2,    11,    11,    48,    11,    11,
-      48,    25,    25,  -100,  -100,    51,  -100,  -100,  -100,  -100,
-      51,  -100,  -100,   123,   126,  -100,  -100,   127,  -100,  -100,
-      48,    48,    48,    48,   129,  -100,   108,     2,  -100,   135,
-    -100,   132,   130,   134,  -100,     2,    51,  -100,   136,  -100
+     103,  -101,  -101,    -2,    -3,    85,  -101,  -101,    -8,    -1,
+       7,  -101,    22,  -101,    31,  -101,  -101,  -101,  -101,    90,
+     107,  -101,    30,  -101,  -101,  -101,  -101,  -101,    39,    46,
+      15,  -101,    54,    90,    64,  -101,    61,  -101,    67,    90,
+    -101,    63,    90,  -101,    68,    81,  -101,    91,    93,   107,
+      95,    40,  -101,    40,   100,  -101,    90,  -101,  -101,  -101,
+      90,    90,    90,    90,  -101,    38,  -101,   -10,  -101,   107,
+    -101,    90,  -101,   107,    40,  -101,  -101,    40,    98,    23,
+      99,    94,   102,    34,   -11,  -101,   106,  -101,    97,  -101,
+      96,   110,  -101,   111,  -101,   112,   109,   113,   108,   118,
+     116,   114,   115,   117,  -101,   121,   122,  -101,   120,   123,
+      40,   -11,  -101,   119,   124,   126,    59,   127,    65,    23,
+      23,    23,    23,  -101,    40,   117,  -101,   129,  -101,   132,
+    -101,  -101,  -101,  -101,   -10,    40,   130,  -101,   133,  -101,
+    -101,   125,    40,    40,     1,     1,    -6,     1,     1,    -6,
+     -11,   -11,  -101,  -101,  -101,  -101,    90,   141,  -101,  -101,
+    -101,   138,  -101,  -101,  -101,  -101,    -6,    -6,    -6,    -6,
+    -101,  -101,    40,   139,   140,   135,    90,  -101,    40,   142,
+    -101,  -101
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -568,43 +583,44 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,    16,    17,    18,     0,     0,     5,     4,     0,     0,
-       0,     3,     0,    25,     0,     1,     7,     6,     2,    34,
-      20,    15,     0,     8,    58,    59,    60,     0,     0,    55,
-      31,     0,    34,     0,    34,    34,    34,     0,    52,     0,
-      34,    56,     0,    19,    22,     0,     0,    12,     0,     0,
-      38,    34,    13,    30,    35,    29,    26,    28,    51,     0,
-       0,    27,     0,    14,     0,    23,    34,     9,    12,    95,
-      94,     0,     0,     0,     0,    76,    78,    79,    87,    91,
-       0,    47,    41,    44,     0,    37,    39,    42,     0,    55,
-      53,    54,    68,     0,     0,    61,    63,     0,    21,     0,
-       0,    11,     0,     0,    90,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    36,     0,     0,
-      32,    70,    67,    57,     0,     0,     0,    65,    24,     0,
-      96,     0,    34,     0,     0,     0,     0,    80,     0,     0,
-      83,    88,    89,    92,    93,    34,    40,    46,    43,    45,
-      34,    62,    64,     0,     0,    10,    86,     0,    75,    77,
-      82,    85,    81,    84,     0,    33,    73,     0,    50,    48,
-      74,     0,    71,     0,    66,     0,    34,    72,     0,    49
+       0,     3,     0,    25,     0,     1,     7,     6,     2,    36,
+      20,    15,     0,     8,    58,    59,    60,    48,     0,     0,
+      54,    33,     0,    36,     0,    29,     0,    26,     0,    36,
+      51,     0,    36,    56,     0,    19,    22,     0,     0,    12,
+       0,     0,    61,    40,     0,    55,    36,    13,    31,    37,
+      36,    36,    36,    36,    32,     0,    28,     0,    14,     0,
+      23,    36,     9,    12,     0,    96,    95,     0,     0,     0,
+       0,    77,    79,    80,    88,    92,     0,    39,    41,    43,
+       0,     0,    30,     0,    27,     0,     0,     0,    69,     0,
+       0,    62,    64,     0,    21,     0,     0,    11,     0,     0,
+       0,    91,    46,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    38,     0,    74,    34,    44,    49,     0,
+      52,    71,    68,    57,     0,     0,    66,    24,     0,    50,
+      97,     0,     0,     0,     0,     0,    81,     0,     0,    84,
+      89,    90,    93,    94,    42,    75,    36,     0,    53,    63,
+      65,     0,    10,    87,    76,    78,    83,    86,    82,    85,
+      35,    48,     0,     0,     0,    72,    36,    67,     0,     0,
+      73,    45
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -100,  -100,   146,  -100,  -100,    43,   148,  -100,  -100,  -100,
-    -100,  -100,   104,   149,  -100,   -32,  -100,  -100,  -100,   -49,
-    -100,    38,  -100,    36,  -100,  -100,  -100,   124,  -100,  -100,
-     -36,  -100,   -13,    33,  -100,  -100,  -100,  -100,   -17,    -7,
-     -43,    26,  -100,   -99,   -64,   -19
+    -101,  -101,   152,  -101,  -101,    86,   155,  -101,  -101,  -101,
+    -101,  -101,    92,   157,  -101,   -33,  -101,  -101,  -101,  -101,
+    -101,  -101,  -101,    41,  -101,  -101,  -101,  -101,    -7,  -101,
+    -101,  -101,  -101,  -101,   -38,  -101,   -19,    29,  -101,  -101,
+    -101,  -101,   -12,   -99,   -43,    24,  -101,  -100,   -77,   -47
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     5,     6,    47,   100,    67,     7,     8,     9,    10,
-      42,    43,    44,    11,    12,    31,    51,   150,    32,    33,
-      84,    85,    86,    87,    34,    35,    36,    37,    38,    39,
-      40,    62,    41,    94,    95,    96,    97,   122,   171,   127,
-     172,    75,    76,    77,    78,    79
+      -1,     5,     6,    49,   106,    72,     7,     8,     9,    10,
+      44,    45,    46,    11,    12,    32,    62,    60,    56,   156,
+      33,    34,    86,    87,    88,    35,    36,   157,    50,    37,
+      38,    39,    40,    41,    42,    67,    43,   100,   101,   102,
+     103,   132,   174,    55,    89,    81,    82,    83,    84,    85
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -612,48 +628,44 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      53,    83,    55,    56,    57,    74,    80,    45,    61,   104,
-     137,    68,   140,    69,    70,    69,    70,    91,    71,    88,
-      71,   136,    69,    70,    69,    70,    92,    71,   102,    71,
-      72,    73,    68,    73,    99,    93,   160,   161,    13,   162,
-     163,    14,    73,    81,    82,    69,    70,   114,   141,   142,
-      71,    45,    19,   139,    24,    25,    26,   115,    20,    27,
-     131,    28,    21,    73,    29,    22,    30,    23,    15,    83,
-     148,     1,     2,    46,     3,    81,   147,   108,   112,   113,
-       4,    48,   152,   109,   110,   111,   112,   113,     1,     2,
-     158,     3,    24,    25,    26,   143,   144,     4,    49,    50,
-     157,    54,    52,    59,    58,    66,    65,    89,   107,    60,
-      63,   101,    64,   164,   103,   120,   105,   116,   165,   117,
-     106,   118,   121,   119,   123,   124,   -69,   125,   128,   129,
-     130,   126,   132,   145,   153,   133,   135,   138,   156,   155,
-     134,   167,   154,   168,   178,   169,   173,   166,   174,   176,
-     175,    16,   179,    17,    18,   149,   146,   151,   177,   170,
-     159,     0,     0,     0,     0,     0,     0,     0,    98,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    90
+      58,    47,   111,    98,   136,    13,    64,    19,    80,    66,
+      14,    73,   121,    99,    75,    76,   146,    20,   149,    77,
+      21,   122,    97,    91,   119,   120,   155,    92,    93,    94,
+      95,   108,    79,    53,   109,    73,    75,    76,   105,    54,
+      22,    77,   150,   151,   166,   167,    23,   168,   169,    48,
+      47,    75,    76,    75,    76,   115,    77,    51,    77,    52,
+      96,   116,   117,   118,   119,   120,    78,   141,    78,    79,
+      57,    79,    75,    76,   152,   153,    61,    77,    75,    76,
+     145,    59,    63,    77,    65,    15,   148,    68,     1,     2,
+      79,     3,   160,    24,    25,    26,    79,     4,    27,   164,
+      28,    69,    29,    30,    70,    31,     1,     2,    71,     3,
+      24,    25,    26,    74,    90,     4,   110,   124,   112,    29,
+     113,   125,   129,   170,   114,   123,   126,   127,   128,   175,
+     130,   131,   -70,   133,   134,   175,   135,   137,   138,   139,
+     -47,    54,   140,   179,   163,   142,   143,   144,   147,   158,
+     162,   161,   171,   172,   176,   178,   177,    16,   181,   107,
+      17,   104,    18,   159,   173,   154,   180,   165
 };
 
-static const yytype_int16 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-      32,    50,    34,    35,    36,    48,    49,    20,    40,    73,
-     109,    47,   111,    13,    14,    13,    14,    60,    18,    51,
-      18,    21,    13,    14,    13,    14,    13,    18,    71,    18,
-      28,    31,    68,    31,    66,    22,   135,   136,     7,   138,
-     139,    13,    31,    13,    14,    13,    14,    22,   112,   113,
-      18,    64,    15,    21,     3,     4,     5,    32,    18,     8,
-     103,    10,    13,    31,    13,    18,    15,    15,     0,   118,
-     119,     3,     4,    19,     6,    13,    14,    21,    30,    31,
-      12,    18,   125,    27,    28,    29,    30,    31,     3,     4,
-     133,     6,     3,     4,     5,   114,   115,    12,    18,    18,
-     132,    17,    16,    20,    17,    15,    13,    13,    26,    21,
-      19,    68,    20,   145,    18,    16,    19,    19,   150,    19,
-      25,    20,    13,    21,    17,    20,    23,    21,    16,    16,
-      19,    23,    15,    15,    14,    25,    21,    21,    19,    17,
-      26,    15,    21,    16,   176,    16,    11,    24,    16,    15,
-      20,     5,    16,     5,     5,   119,   118,   124,   175,   166,
-     134,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    64,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    59
+      33,    20,    79,    13,   103,     7,    39,    15,    51,    42,
+      13,    49,    23,    23,    13,    14,   116,    18,   118,    18,
+      13,    32,    65,    56,    30,    31,   125,    60,    61,    62,
+      63,    74,    31,    18,    77,    73,    13,    14,    71,    24,
+      18,    18,   119,   120,   144,   145,    15,   147,   148,    19,
+      69,    13,    14,    13,    14,    21,    18,    18,    18,    13,
+      22,    27,    28,    29,    30,    31,    28,   110,    28,    31,
+      16,    31,    13,    14,   121,   122,    15,    18,    13,    14,
+      21,    17,    15,    18,    21,     0,    21,    19,     3,     4,
+      31,     6,   135,     3,     4,     5,    31,    12,     8,   142,
+      10,    20,    12,    13,    13,    15,     3,     4,    15,     6,
+       3,     4,     5,    18,    14,    12,    18,    20,    19,    12,
+      26,    25,    13,   156,    22,    19,    16,    16,    16,   172,
+      17,    13,    24,    17,    20,   178,    21,    16,    16,    19,
+      11,    24,    19,   176,    19,    26,    22,    21,    21,    17,
+      17,    21,    11,    15,    15,    20,    16,     5,    16,    73,
+       5,    69,     5,   134,   171,   124,   178,   143
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -662,22 +674,23 @@ static const yytype_uint8 yystos[] =
 {
        0,     3,     4,     6,    12,    34,    35,    39,    40,    41,
       42,    46,    47,     7,    13,     0,    35,    39,    46,    15,
-      18,    13,    18,    15,     3,     4,     5,     8,    10,    13,
-      15,    48,    51,    52,    57,    58,    59,    60,    61,    62,
-      63,    65,    43,    44,    45,    65,    19,    36,    18,    18,
-      18,    49,    16,    48,    17,    48,    48,    48,    17,    20,
-      21,    48,    64,    19,    20,    13,    15,    38,    63,    13,
-      14,    18,    28,    31,    73,    74,    75,    76,    77,    78,
-      73,    13,    14,    52,    53,    54,    55,    56,    48,    13,
-      60,    73,    13,    22,    66,    67,    68,    69,    45,    48,
-      37,    38,    73,    18,    77,    19,    25,    26,    21,    27,
-      28,    29,    30,    31,    22,    32,    19,    19,    20,    21,
-      16,    13,    70,    17,    20,    21,    23,    72,    16,    16,
-      19,    73,    15,    25,    26,    21,    21,    76,    21,    21,
-      76,    77,    77,    78,    78,    15,    54,    14,    52,    56,
-      50,    66,    73,    14,    21,    17,    19,    48,    73,    74,
-      76,    76,    76,    76,    48,    48,    24,    15,    16,    16,
-      72,    71,    73,    11,    16,    20,    15,    71,    48,    16
+      18,    13,    18,    15,     3,     4,     5,     8,    10,    12,
+      13,    15,    48,    53,    54,    58,    59,    62,    63,    64,
+      65,    66,    67,    69,    43,    44,    45,    69,    19,    36,
+      61,    18,    13,    18,    24,    76,    51,    16,    48,    17,
+      50,    15,    49,    15,    48,    21,    48,    68,    19,    20,
+      13,    15,    38,    67,    18,    13,    14,    18,    28,    31,
+      77,    78,    79,    80,    81,    82,    55,    56,    57,    77,
+      14,    48,    48,    48,    48,    48,    22,    77,    13,    23,
+      70,    71,    72,    73,    45,    48,    37,    38,    77,    77,
+      18,    81,    19,    26,    22,    21,    27,    28,    29,    30,
+      31,    23,    32,    19,    20,    25,    16,    16,    16,    13,
+      17,    13,    74,    17,    20,    21,    76,    16,    16,    19,
+      19,    77,    26,    22,    21,    21,    80,    21,    21,    80,
+      81,    81,    82,    82,    56,    76,    52,    60,    17,    70,
+      77,    21,    17,    19,    77,    78,    80,    80,    80,    80,
+      48,    11,    15,    61,    75,    77,    15,    16,    20,    48,
+      75,    16
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -685,14 +698,14 @@ static const yytype_uint8 yyr1[] =
 {
        0,    33,    34,    34,    34,    34,    34,    34,    36,    37,
       35,    38,    38,    39,    40,    41,    42,    42,    42,    43,
-      43,    44,    44,    45,    46,    47,    48,    48,    48,    48,
-      48,    49,    50,    48,    48,    51,    52,    53,    53,    54,
-      54,    55,    55,    55,    55,    55,    55,    56,    57,    57,
-      58,    59,    60,    60,    61,    62,    64,    63,    65,    65,
-      65,    66,    66,    67,    67,    67,    67,    67,    68,    69,
-      70,    71,    71,    72,    72,    73,    73,    74,    74,    75,
-      75,    75,    75,    75,    75,    75,    75,    76,    76,    76,
-      76,    77,    77,    77,    78,    78,    78
+      43,    44,    44,    45,    46,    47,    49,    48,    48,    50,
+      48,    48,    48,    51,    52,    48,    48,    53,    54,    55,
+      55,    56,    56,    57,    58,    58,    59,    60,    61,    62,
+      63,    64,    65,    65,    66,    66,    68,    67,    69,    69,
+      69,    69,    70,    70,    71,    71,    71,    71,    71,    72,
+      73,    74,    75,    75,    76,    76,    77,    77,    78,    78,
+      79,    79,    79,    79,    79,    79,    79,    79,    80,    80,
+      80,    80,    81,    81,    81,    82,    82,    82
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -700,14 +713,14 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     2,     1,     1,     1,     2,     2,     0,     0,
        8,     2,     0,     4,     4,     2,     1,     1,     1,     1,
-       0,     3,     1,     2,     6,     2,     2,     2,     2,     2,
-       2,     0,     0,     6,     0,     2,     4,     1,     0,     1,
-       3,     1,     1,     3,     1,     3,     3,     1,     7,    11,
-       7,     2,     1,     3,     3,     1,     0,     4,     1,     1,
-       1,     1,     3,     1,     3,     2,     6,     2,     1,     1,
-       1,     1,     3,     3,     4,     4,     1,     4,     1,     1,
-       3,     4,     4,     3,     4,     4,     4,     1,     3,     3,
-       2,     1,     3,     3,     1,     1,     3
+       0,     3,     1,     2,     6,     2,     0,     3,     2,     0,
+       3,     2,     2,     0,     0,     6,     0,     2,     4,     1,
+       0,     1,     3,     1,     4,    10,     4,     0,     0,     4,
+       5,     1,     4,     5,     1,     2,     0,     4,     1,     1,
+       1,     2,     1,     3,     1,     3,     2,     6,     2,     1,
+       1,     1,     1,     3,     3,     4,     4,     1,     4,     1,
+       1,     3,     4,     4,     3,     4,     4,     4,     1,     3,
+       3,     2,     1,     3,     3,     1,     1,     3
 };
 
 
@@ -1384,19 +1397,19 @@ yyreduce:
   switch (yyn)
     {
         case 8:
-#line 54 "my.y" /* yacc.c:1646  */
+#line 67 "backup.y" /* yacc.c:1646  */
     {struct_flag=1;}
-#line 1390 "y.tab.c" /* yacc.c:1646  */
+#line 1403 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 54 "my.y" /* yacc.c:1646  */
+#line 67 "backup.y" /* yacc.c:1646  */
     {struct_flag=0;}
-#line 1396 "y.tab.c" /* yacc.c:1646  */
+#line 1409 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 54 "my.y" /* yacc.c:1646  */
+#line 67 "backup.y" /* yacc.c:1646  */
     {
 
 																	if(search_struct((yyvsp[-6].fixstr)))
@@ -1408,59 +1421,67 @@ yyreduce:
 																		
 																	}
 																}
-#line 1412 "y.tab.c" /* yacc.c:1646  */
+#line 1425 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 73 "my.y" /* yacc.c:1646  */
+#line 88 "backup.y" /* yacc.c:1646  */
     {
 												
 												level = 0;
-												
+												char buffer[100];
+												sprintf(buffer,"func end");
+												generate(buffer);
 											}
-#line 1422 "y.tab.c" /* yacc.c:1646  */
+#line 1437 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 79 "my.y" /* yacc.c:1646  */
+#line 96 "backup.y" /* yacc.c:1646  */
     {level = 2;
 												st[limit].num_params = param_count;}
-#line 1429 "y.tab.c" /* yacc.c:1646  */
+#line 1444 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 82 "my.y" /* yacc.c:1646  */
+#line 99 "backup.y" /* yacc.c:1646  */
     {	
 
 										if(search_func((yyvsp[0].fixstr))) printf("error : same function %s declared \n",(yyvsp[0].fixstr));
-										else enter_func((yyvsp[0].fixstr),(yyvsp[-1].fixstr));
-										// active_func_ptr = st[limit]; 
+										else 
+											{
+												enter_func((yyvsp[0].fixstr),(yyvsp[-1].fixstr));
+												char buffer[100];
+												sprintf(buffer,"func begin %s",(yyvsp[0].fixstr));
+												generate(buffer);
+											}
+										
 										level = 1;
 										param_count =0;
 									}
-#line 1442 "y.tab.c" /* yacc.c:1646  */
+#line 1463 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 91 "my.y" /* yacc.c:1646  */
+#line 114 "backup.y" /* yacc.c:1646  */
     {strcpy((yyval.fixstr),(yyvsp[0].fixstr));}
-#line 1448 "y.tab.c" /* yacc.c:1646  */
+#line 1469 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 92 "my.y" /* yacc.c:1646  */
+#line 115 "backup.y" /* yacc.c:1646  */
     {strcpy((yyval.fixstr),(yyvsp[0].fixstr));}
-#line 1454 "y.tab.c" /* yacc.c:1646  */
+#line 1475 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 93 "my.y" /* yacc.c:1646  */
+#line 116 "backup.y" /* yacc.c:1646  */
     {strcpy((yyval.fixstr),(yyvsp[0].fixstr));}
-#line 1460 "y.tab.c" /* yacc.c:1646  */
+#line 1481 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 101 "my.y" /* yacc.c:1646  */
+#line 124 "backup.y" /* yacc.c:1646  */
     {
 										e_type = 1;
 										if(search_param((yyvsp[0].fixstr)))
@@ -1468,109 +1489,310 @@ yyreduce:
 										else
 											enter_param((yyvsp[0].fixstr),(yyvsp[-1].fixstr));
 									
-								}
-#line 1473 "y.tab.c" /* yacc.c:1646  */
+										}
+#line 1494 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 117 "my.y" /* yacc.c:1646  */
-    {printf("\n syntax is correct\n");}
-#line 1479 "y.tab.c" /* yacc.c:1646  */
+#line 140 "backup.y" /* yacc.c:1646  */
+    { 	char buffer[100];
+														sprintf(buffer,"func end");
+														generate(buffer);
+														printf("\n syntax is correct\n");
+													}
+#line 1504 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 119 "my.y" /* yacc.c:1646  */
+#line 146 "backup.y" /* yacc.c:1646  */
     {
 								if(search_func((yyvsp[0].fixstr))) 
 									printf("error : same %s function declared before \n",(yyvsp[0].fixstr));
 								else
+								{
 									enter_func((yyvsp[0].fixstr),(yyvsp[-1].fixstr));
+									char buffer[100];
+									sprintf(buffer,"func begin main");
+									generate(buffer);
+									
+								}
 									// active_func_ptr = st[limit]; 
 									level = 2;
 							}
-#line 1492 "y.tab.c" /* yacc.c:1646  */
+#line 1523 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 26:
+#line 162 "backup.y" /* yacc.c:1646  */
+    {backpatch((*(yyvsp[0].vec)),nextquad);}
+#line 1529 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 27:
+#line 162 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1535 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 28:
+#line 163 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1541 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 164 "backup.y" /* yacc.c:1646  */
+    {backpatch((*(yyvsp[0].vec)),nextquad);}
+#line 1547 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 164 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1553 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 134 "my.y" /* yacc.c:1646  */
-    {level++; }
-#line 1498 "y.tab.c" /* yacc.c:1646  */
+#line 166 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1559 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 134 "my.y" /* yacc.c:1646  */
+#line 167 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1565 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 33:
+#line 168 "backup.y" /* yacc.c:1646  */
+    {level++; }
+#line 1571 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 34:
+#line 168 "backup.y" /* yacc.c:1646  */
     {level--;}
-#line 1504 "y.tab.c" /* yacc.c:1646  */
+#line 1577 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 168 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1583 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 140 "my.y" /* yacc.c:1646  */
-    {
+#line 169 "backup.y" /* yacc.c:1646  */
+    {(yyval.vec) = new vector<int>;}
+#line 1589 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 174 "backup.y" /* yacc.c:1646  */
+    {	
 													if(!search_func((yyvsp[-3].fixstr)))
+													{
 														printf("%s function not declared\n",(yyvsp[-3].fixstr));
+													}
 													else
 													{
 														// printf("%d\n",$3 );
 														if(st[active_func_num].num_params != (yyvsp[-1].num))
 															printf("mismatch in number of parameters in call and declaration in %s function\n",(yyvsp[-3].fixstr));
-
+														else{
+															char *var = nextvar();
+															char buffer[100];
+															// sprintf(buffer,"refparam  %s",var);
+															sprintf(buffer,"call %s %d",(yyvsp[-3].fixstr),(yyvsp[-1].num)+1);
+															generate(buffer);
+														}
 													}
 
 												}
-#line 1521 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 37:
-#line 153 "my.y" /* yacc.c:1646  */
-    {(yyval.num) = (yyvsp[0].num);}
-#line 1527 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 38:
-#line 153 "my.y" /* yacc.c:1646  */
-    {(yyval.num) = 0;}
-#line 1533 "y.tab.c" /* yacc.c:1646  */
+#line 1614 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 155 "my.y" /* yacc.c:1646  */
-    {(yyval.num) =  1;}
-#line 1539 "y.tab.c" /* yacc.c:1646  */
+#line 195 "backup.y" /* yacc.c:1646  */
+    {(yyval.num) = (yyvsp[0].num);}
+#line 1620 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 155 "my.y" /* yacc.c:1646  */
+#line 195 "backup.y" /* yacc.c:1646  */
+    {(yyval.num) = 0;}
+#line 1626 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 41:
+#line 197 "backup.y" /* yacc.c:1646  */
+    {(yyval.num) =  1;}
+#line 1632 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 197 "backup.y" /* yacc.c:1646  */
     {(yyval.num) = (yyvsp[0].num) + 1;}
-#line 1545 "y.tab.c" /* yacc.c:1646  */
+#line 1638 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 199 "backup.y" /* yacc.c:1646  */
+    {	
+							char buffer[100];
+							sprintf(buffer,"param  %s",(yyvsp[0].expr)->value);
+							generate(buffer);
+
+
+						}
+#line 1650 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 243 "backup.y" /* yacc.c:1646  */
+    {
+											(yyval.vec) = new vector<int>;
+											(*(yyval.vec)).push_back((yyvsp[-3].num));
+											merger((*(yyval.vec)),(*(yyvsp[-1].vec)));	
+											// backpatch((*$$),nextquad);
+										}
+#line 1661 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 45:
+#line 250 "backup.y" /* yacc.c:1646  */
+    {
+																			(yyval.vec)  = new vector<int>;
+																			global_table[(yyvsp[-9].num)].gotonum = (yyvsp[-3].num);
+																			merger((*(yyval.vec)),(*(yyvsp[-7].vec)));
+																			merger((*(yyval.vec)),(*(yyvsp[-5].vec)));
+																			merger((*(yyval.vec)),(*(yyvsp[-1].vec)));
+																			}
+#line 1673 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 46:
+#line 261 "backup.y" /* yacc.c:1646  */
+    {
+									
+									(yyval.num) = nextquad;
+									char buffer[100];
+									sprintf(buffer,"if %s <=0 ",(yyvsp[-1].expr)->value);
+									generate(buffer);
+								}
+#line 1685 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 165 "my.y" /* yacc.c:1646  */
+#line 269 "backup.y" /* yacc.c:1646  */
+    {
+			(yyval.vec) = new vector<int>;
+			(*(yyval.vec)).push_back(nextquad);
+			char buffer[100];
+			sprintf(buffer," ");
+			generate(buffer);
+		}
+#line 1697 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 277 "backup.y" /* yacc.c:1646  */
+    {
+			(yyval.num) = nextquad;
+
+		}
+#line 1706 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 282 "backup.y" /* yacc.c:1646  */
     {	
-								int f = search_vars((yyvsp[0].fixstr));
-								if(f==0)
-								{
-									f = search_param((yyvsp[0].fixstr));
-									if(!(level==2 && f!=0))
+												strcpy(global_table[nextquad].s, " ");
+												global_table[nextquad].gotonum = (yyvsp[-3].wex)->begin;
+												nextquad = nextquad + 1;
+												backpatch((*(yyvsp[-1].vec)),(yyvsp[-3].wex)->begin);
+												(yyval.vec) = new vector<int>;
+												(*(yyval.vec)) = ((yyvsp[-3].wex)->false_list);
+												}
+#line 1719 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 292 "backup.y" /* yacc.c:1646  */
+    {	
+											(yyval.wex) = new while_ex;
+											((yyval.wex)->false_list).push_back(nextquad);
+											char buffer[50];
+											sprintf(buffer,"if %s <= 0", (yyvsp[-1].expr)->value);
+											generate(buffer);
+											(yyval.wex)->begin = (yyvsp[-3].num);
+
+											}
+#line 1733 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 303 "backup.y" /* yacc.c:1646  */
+    {//$1 = new vector<int> ;
+						//(*$$) = (*$1);
+						}
+#line 1741 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 52:
+#line 309 "backup.y" /* yacc.c:1646  */
+    { 	
+									if((yyvsp[-3].expr)->type !=1 || (yyvsp[-1].expr)->type != 1)
+										printf("error : type mismatch of operands in assigment statement\n");
+									else
 									{
-										printf("%s is not declared before and using for func call \n",(yyvsp[0].fixstr) );
+
+										char buffer[50];
+										sprintf(buffer,"%s := %s ",(yyvsp[-3].expr)->value , (yyvsp[-1].expr)->value);
+										
+										generate(buffer);
 									}
+									(yyval.vec) = new vector<int>;
 								}
-							}
-#line 1561 "y.tab.c" /* yacc.c:1646  */
+#line 1759 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 323 "backup.y" /* yacc.c:1646  */
+    {	
+												(yyval.vec) = new vector<int>;
+												int f = search_vars((yyvsp[-1].fixstr));
+												if(f==0)
+												{
+													f = search_param((yyvsp[-1].fixstr));
+													if(!(level==2 && f!=0))
+													{
+														printf("error: %s is not defined earlier\n",(yyvsp[-1].fixstr) );
+														f = -1;
+													}
+												}
+												else
+												{
+													if((yyvsp[-4].expr)->type ==3 && f == 1)
+													{
+														char buffer[50];
+														sprintf(buffer,"%s :=  &%s ",(yyvsp[-4].expr)->value , (yyvsp[-1].fixstr));
+														
+														generate(buffer);
+													}
+													else{
+														printf("error : type mismatch of operands in assigment statement\n");	
+													}
+												}
+
+											}
+#line 1791 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 192 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-									printf("error : type mismatch of operands in assigment statement\n");
-								}
-#line 1569 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 196 "my.y" /* yacc.c:1646  */
-    {	
+#line 351 "backup.y" /* yacc.c:1646  */
+    {	(yyval.expr) = new expression;
 								int f = search_vars((yyvsp[0].fixstr));
 								if(f==0)
 								{
@@ -1578,307 +1800,575 @@ yyreduce:
 									if(!(level==2 && f!=0))
 									{
 										printf("error: %s is not defined earlier\n",(yyvsp[0].fixstr) );
-										(yyval.num) = -1;
+										(yyval.expr)->type = -1;
 									}
 								}
 								else
-									(yyval.num) = f;
+								{
+									(yyval.expr)->type = f;
+									strcpy((yyval.expr)->value,(yyvsp[0].fixstr));
+								}
 
 								}
-#line 1589 "y.tab.c" /* yacc.c:1646  */
+#line 1814 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 370 "backup.y" /* yacc.c:1646  */
+    {	(yyval.expr) = new expression;
+												int f = array_valid((yyvsp[-1].fixstr),(yyvsp[0].num));
+												// int i;
+												// for(i=0;i<$2;i++)
+												// printf("%d\n",for_array[i] );
+												if(f==0)
+												{
+													f = search_param((yyvsp[-1].fixstr));
+													if(!(level==2 && f!=0))
+													{
+														printf("error: %s is not defined earlier\n",(yyvsp[-1].fixstr) );
+														(yyval.expr)->type = -1;
+													}
+												}
+												else
+												{
+													(yyval.expr)->type = f;
+													strcpy((yyval.expr)->value,(yyvsp[-1].fixstr));
+												}
+												}
+#line 1839 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 214 "my.y" /* yacc.c:1646  */
+#line 393 "backup.y" /* yacc.c:1646  */
     {strcpy(result_type,(yyvsp[0].fixstr));}
-#line 1595 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 68:
-#line 235 "my.y" /* yacc.c:1646  */
-    {	e_type = 1;
-								if(struct_flag==0)
-								{
-									int f = search_vars((yyvsp[0].fixstr)); int f2 = search_param((yyvsp[0].fixstr));
-									if(f != 0)
-										printf("found same name var : %s\n",(yyvsp[0].fixstr));
-
-									
-									else if(level == 2 && f2 !=0 )
-										printf("found same parameter :%s  in  function\n",(yyvsp[0].fixstr));
-									else
-										enter_vars((yyvsp[0].fixstr));
-								}
-								else
-								{
-									if(search_in_struct_var((yyvsp[0].fixstr)))
-										printf("found same name var in struct  : %s\n",(yyvsp[0].fixstr));
-									else
-										enter_in_struct((yyvsp[0].fixstr));
-
-								}
-
-							}
-#line 1623 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 69:
-#line 259 "my.y" /* yacc.c:1646  */
-    {	e_type = 2;
-								if(struct_flag==0)
-								{
-									int f = search_vars((yyvsp[0].fixstr)); int f2 = search_param((yyvsp[0].fixstr));
-									if(f != 0)
-										printf("found same name var : %s\n",(yyvsp[0].fixstr));
-									
-									else if(level == 2 && f2 !=0 )
-										printf("found same parameter :%s  in  function\n",(yyvsp[0].fixstr));
-									else
-										enter_vars((yyvsp[0].fixstr));
-								}
-								else
-								{
-									if(search_in_struct_var((yyvsp[0].fixstr)))
-										printf("found same name var in struct  : %s\n",(yyvsp[0].fixstr));
-									else
-										enter_in_struct((yyvsp[0].fixstr));
-
-								}
-
-							}
-#line 1650 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 70:
-#line 283 "my.y" /* yacc.c:1646  */
-    {	e_type = 3;
-								if(struct_flag==0)
-								{
-									int f = search_vars((yyvsp[0].fixstr)); int f2 = search_param((yyvsp[0].fixstr));
-									if(f != 0)
-										printf("found same name var : %s\n",(yyvsp[0].fixstr));
-									
-									else if(level == 2 && f2 !=0 )
-										printf("found same parameter :%s  in  function\n",(yyvsp[0].fixstr));
-									else
-										enter_vars((yyvsp[0].fixstr));
-								}
-								else
-								{
-									if(search_in_struct_var((yyvsp[0].fixstr)))
-										printf("found same name var in struct  : %s\n",(yyvsp[0].fixstr));
-									else
-										enter_in_struct((yyvsp[0].fixstr));
-
-								}
-
-							}
-#line 1677 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 75:
-#line 314 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-3].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-											}
-#line 1690 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 77:
-#line 325 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-3].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-											}
-#line 1703 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 80:
-#line 337 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-										}
-#line 1716 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 81:
-#line 345 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-3].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-											}
-#line 1729 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 82:
-#line 353 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-3].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-											}
-#line 1742 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 83:
-#line 361 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-										{
-											printf("error : type mismatch in expersion\n");
-											(yyval.num) = -1;
-										}
-										else
-											(yyval.num) = 1;
-									}
-#line 1755 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 84:
-#line 369 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-3].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-											}
-#line 1768 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 85:
-#line 378 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-3].num) !=1 || (yyvsp[0].num) != 1)
-											{
-												printf("error : type mismatch in expersion\n");
-												(yyval.num) = -1;
-											}
-											else
-												(yyval.num) = 1;
-											}
-#line 1781 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 86:
-#line 386 "my.y" /* yacc.c:1646  */
-    {(yyval.num) = (yyvsp[-1].num);}
-#line 1787 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 88:
-#line 392 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-										{
-											printf("error : type mismatch in expersion\n");
-											(yyval.num) = -1;
-										}
-										else
-											(yyval.num) = 1;
-										}
-#line 1800 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 89:
-#line 400 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-										{
-											printf("error : type mismatch in expersion\n");
-											(yyval.num) = -1;
-										}
-										else
-											(yyval.num) = 1;
-										}
-#line 1813 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 90:
-#line 408 "my.y" /* yacc.c:1646  */
-    {(yyval.num) = (yyvsp[0].num);}
-#line 1819 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 92:
-#line 412 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-										{
-											printf("error : type mismatch in expersion\n");
-											(yyval.num) = -1;
-										}
-										else
-											(yyval.num) = 1;
-										}
-#line 1832 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 93:
-#line 420 "my.y" /* yacc.c:1646  */
-    { if((yyvsp[-2].num) !=1 || (yyvsp[0].num) != 1)
-										{
-											(yyval.num) = -1;
-											printf("error : type mismatch in expersion\n");
-										}
-										else
-											(yyval.num) = 1;
-										}
 #line 1845 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 61:
+#line 399 "backup.y" /* yacc.c:1646  */
+    {
+
+										if(search_struct((yyvsp[0].fixstr)))
+										{
+											e_type = 4;
+											strcat((yyvsp[-1].fixstr),"_");
+											strcat((yyvsp[-1].fixstr),(yyvsp[0].fixstr));
+											strcpy((yyval.fixstr),(yyvsp[-1].fixstr));
+										}
+										else
+										{
+											printf("error: struct name %s is undeclared  \n",(yyvsp[0].fixstr) );
+										}
+								
+								
+					}
+#line 1866 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 66:
+#line 423 "backup.y" /* yacc.c:1646  */
+    {
+											// printf("%s\n",$1 );
+											int i;
+											// printf(" num_b = %d\n", $2 );
+											// for(i=0;i<$2;i++)
+											// 	printf("%d\n",for_array[i] );
+											enter_num_b((yyvsp[-1].fixstr), (yyvsp[0].num));
+
+										}
+#line 1880 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 67:
+#line 432 "backup.y" /* yacc.c:1646  */
+    {
+											enter_num_b((yyvsp[-5].fixstr), (yyvsp[-4].num));
+											
+											
+										}
+#line 1890 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 69:
+#line 442 "backup.y" /* yacc.c:1646  */
+    {	strcpy((yyval.fixstr),(yyvsp[0].fixstr));
+								if(e_type==4)
+									e_type = 4;
+								else
+									e_type = 1;
+
+								if(struct_flag==0)
+								{
+									int f = search_vars((yyvsp[0].fixstr)); int f2 = search_param((yyvsp[0].fixstr));
+									if(f != 0)
+									{
+										printf("found same name var : %s\n",(yyvsp[0].fixstr));
+									}
+
+									
+									else if(level == 2 && f2 !=0 )
+									{
+										printf("found same parameter :%s  in  function\n",(yyvsp[0].fixstr));
+									}
+									else
+									{
+										enter_vars((yyvsp[0].fixstr));
+									}
+								}
+								else
+								{
+									if(search_in_struct_var((yyvsp[0].fixstr)))
+										printf("found same name var in struct  : %s\n",(yyvsp[0].fixstr));
+									else
+										enter_in_struct((yyvsp[0].fixstr));
+
+								}
+
+							}
+#line 1929 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 477 "backup.y" /* yacc.c:1646  */
+    {	strcpy((yyval.fixstr),(yyvsp[0].fixstr));
+								if(e_type==4)
+									e_type = 5;
+								else
+									e_type = 2;
+								
+								if(struct_flag==0)
+								{
+									int f = search_vars((yyvsp[0].fixstr)); int f2 = search_param((yyvsp[0].fixstr));
+									if(f != 0)
+										printf("found same name var : %s\n",(yyvsp[0].fixstr));
+									
+									else if(level == 2 && f2 !=0 )
+										printf("found same parameter :%s  in  function\n",(yyvsp[0].fixstr));
+									else
+										enter_vars((yyvsp[0].fixstr));
+								}
+								else
+								{
+									if(search_in_struct_var((yyvsp[0].fixstr)))
+										printf("found same name var in struct  : %s\n",(yyvsp[0].fixstr));
+									else
+										enter_in_struct((yyvsp[0].fixstr));
+
+								}
+
+							}
+#line 1961 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 506 "backup.y" /* yacc.c:1646  */
+    {	if(e_type==4)
+									e_type = 6;
+								else
+									e_type = 3;
+								strcpy((yyval.fixstr),(yyvsp[0].fixstr));
+								if(struct_flag==0)
+								{
+									int f = search_vars((yyvsp[0].fixstr)); int f2 = search_param((yyvsp[0].fixstr));
+									if(f != 0)
+										printf("found same name var : %s\n",(yyvsp[0].fixstr));
+									
+									else if(level == 2 && f2 !=0 )
+										printf("found same parameter :%s  in  function\n",(yyvsp[0].fixstr));
+									else
+										enter_vars((yyvsp[0].fixstr));
+								}
+								else
+								{
+									if(search_in_struct_var((yyvsp[0].fixstr)))
+										printf("found same name var in struct  : %s\n",(yyvsp[0].fixstr));
+									else
+										enter_in_struct((yyvsp[0].fixstr));
+
+								}
+
+							}
+#line 1992 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 74:
+#line 535 "backup.y" /* yacc.c:1646  */
+    {(yyval.num) = 1;
+
+									for_array[0] = sti((yyvsp[-1].fixstr));
+									}
+#line 2001 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 75:
+#line 539 "backup.y" /* yacc.c:1646  */
+    {(yyval.num) = (yyvsp[0].num) + 1;
+										for_array[(yyval.num)-1] = sti((yyvsp[-2].fixstr));
+									}
+#line 2009 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 76:
+#line 547 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+											if((yyvsp[-3].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+												(yyval.expr)->type = 1;
+											}
+#line 2023 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 78:
+#line 559 "backup.y" /* yacc.c:1646  */
+    {(yyval.expr) = new expression;
+											 if((yyvsp[-3].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+												(yyval.expr)->type = 1;
+											}
+#line 2037 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 80:
+#line 571 "backup.y" /* yacc.c:1646  */
+    {
+							
+							(yyval.expr) = new expression;
+							(*(yyval.expr)) = (*(yyvsp[0].expr));
+							
+							
+						}
+#line 2049 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 81:
+#line 578 "backup.y" /* yacc.c:1646  */
+    {(yyval.expr) = new expression;
+											 if((yyvsp[-2].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+											{
+												(yyval.expr)->type = 1;
+												char *var = nextvar();
+												char buffer[50];
+												sprintf(buffer,"%s := %s > %s",var , (yyvsp[-2].expr)->value , (yyvsp[0].expr)->value);
+												strcpy((yyval.expr)->value,var);
+												generate(buffer);
+											}
+										}
+#line 2070 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 82:
+#line 594 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+											if((yyvsp[-3].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+											{
+												(yyval.expr)->type = 1;
+												char *var = nextvar();
+												char buffer[50];
+												sprintf(buffer,"%s := %s != %s",var , (yyvsp[-3].expr)->value , (yyvsp[0].expr)->value);
+												strcpy((yyval.expr)->value,var);
+												generate(buffer);
+											}
+											}
+#line 2091 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 83:
+#line 610 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+											if((yyvsp[-3].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+											{
+												(yyval.expr)->type = 1;
+												char *var = nextvar();
+												char buffer[50];
+												sprintf(buffer,"%s := %s == %s",var , (yyvsp[-3].expr)->value , (yyvsp[0].expr)->value);
+												strcpy((yyval.expr)->value,var);
+												generate(buffer);
+											}
+											}
+#line 2112 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 84:
+#line 626 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+										if((yyvsp[-2].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											(yyval.expr)->type = -1;
+										}
+										else
+										{
+											(yyval.expr)->type = 1;
+											char *var = nextvar();
+											char buffer[50];
+											sprintf(buffer,"%s := %s < %s",var , (yyvsp[-2].expr)->value , (yyvsp[0].expr)->value);
+											strcpy((yyval.expr)->value,var);
+											generate(buffer);
+										}
+									}
+#line 2133 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 85:
+#line 642 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+											if((yyvsp[-3].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+											{
+
+												(yyval.expr)->type = 1;
+												char *var = nextvar();
+											char buffer[50];
+											sprintf(buffer,"%s := %s <= %s",var , (yyvsp[-3].expr)->value , (yyvsp[0].expr)->value);
+											strcpy((yyval.expr)->value,var);
+											generate(buffer);
+											}
+											}
+#line 2155 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 86:
+#line 660 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+											if((yyvsp[-3].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+											{
+												printf("error : type mismatch in expersion\n");
+												(yyval.expr)->type = -1;
+											}
+											else
+											{
+												(yyval.expr)->type = 1;
+												char *var = nextvar();
+												char buffer[50];
+												sprintf(buffer,"%s := %s >= %s",var , (yyvsp[-3].expr)->value , (yyvsp[0].expr)->value);
+												strcpy((yyval.expr)->value,var);
+												generate(buffer);
+											}
+											}
+#line 2176 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 87:
+#line 676 "backup.y" /* yacc.c:1646  */
+    {(yyval.expr) = new expression;
+										(yyval.expr)->type = (yyvsp[-1].expr)->type;
+										char *var = nextvar();
+										char buffer[50];
+										sprintf(buffer,"%s := !%s",var, (yyvsp[-1].expr)->value);
+										strcpy((yyval.expr)->value,var);
+										generate(buffer);
+									}
+#line 2189 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 88:
+#line 688 "backup.y" /* yacc.c:1646  */
+    {
+							
+							(yyval.expr) = new expression;
+							(*(yyval.expr)) = (*(yyvsp[0].expr));
+							
+							
+						}
+#line 2201 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 89:
+#line 695 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+										if((yyvsp[-2].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											(yyval.expr)->type = -1;
+										}
+										else
+										{
+											(yyval.expr)->type = 1;
+											char *var = nextvar();
+											char buffer[50];
+											sprintf(buffer,"%s := %s + %s",var , (yyvsp[-2].expr)->value , (yyvsp[0].expr)->value);
+											strcpy((yyval.expr)->value,var);
+											generate(buffer);
+											
+										}
+										}
+#line 2223 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 90:
+#line 712 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;
+											if((yyvsp[-2].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											(yyval.expr)->type = -1;
+										}
+										else
+										{
+											(yyval.expr)->type = 1;
+											char *var = nextvar();
+											char buffer[50];
+											sprintf(buffer,"%s := %s - %s",var , (yyvsp[-2].expr)->value , (yyvsp[0].expr)->value);
+											strcpy((yyval.expr)->value,var);
+											generate(buffer);
+											
+											
+										}
+										}
+#line 2246 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 91:
+#line 730 "backup.y" /* yacc.c:1646  */
+    {
+
+									(yyval.expr) = new expression;
+									(yyval.expr)->type = (yyvsp[0].expr)->type; 
+									// $$->value = '-';
+									char p[80] = "-";
+									strcat(p,(yyvsp[0].expr)->value);
+									strcpy((yyval.expr)->value,p);
+								}
+#line 2260 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 92:
+#line 742 "backup.y" /* yacc.c:1646  */
+    {
+							
+							(yyval.expr) = new expression;
+							(*(yyval.expr)) = (*(yyvsp[0].expr));
+							
+							
+						}
+#line 2272 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 93:
+#line 749 "backup.y" /* yacc.c:1646  */
+    { 	
+										(yyval.expr) = new expression;
+										
+										if((yyvsp[-2].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+										{
+											printf("error : type mismatch in expersion\n");
+											(yyval.expr)->type = -1;
+										}
+										else
+										{
+											(yyval.expr)->type = 1;
+
+											char *var = nextvar();
+											char buffer[50];
+											sprintf(buffer,"%s := %s * %s",var , (yyvsp[-2].expr)->value , (yyvsp[0].expr)->value);
+											strcpy((yyval.expr)->value,var);
+											generate(buffer);
+											
+											
+										}
+									}
+#line 2298 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 94:
-#line 430 "my.y" /* yacc.c:1646  */
-    {(yyval.num) = 1;}
-#line 1851 "y.tab.c" /* yacc.c:1646  */
+#line 770 "backup.y" /* yacc.c:1646  */
+    { 
+										(yyval.expr) = new expression;
+										if((yyvsp[-2].expr)->type !=1 || (yyvsp[0].expr)->type != 1)
+										{
+											(yyval.expr)->type = -1;
+											printf("error : type mismatch in expersion\n");
+										}
+										else
+										{
+											// printf("%s==%s\n", $1->value , $3->value);
+											(yyval.expr)->type = 1;
+											char *var = nextvar();
+											char buffer[50];
+											sprintf(buffer,"%s := %s / %s",var , (yyvsp[-2].expr)->value , (yyvsp[0].expr)->value);
+											
+											generate(buffer);
+											strcpy((yyval.expr)->value,var);
+
+											
+										}
+											
+									}
+#line 2325 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 431 "my.y" /* yacc.c:1646  */
+#line 794 "backup.y" /* yacc.c:1646  */
     {	
+							(yyval.expr) = new expression;
+							strcpy((yyval.expr)->value,(yyvsp[0].fixstr));
+							(*(yyval.expr)).type = 1;
+							// printf("ffff %s\n",$1 );
+						}
+#line 2336 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 96:
+#line 800 "backup.y" /* yacc.c:1646  */
+    {	
+									(yyval.expr) = new expression;
+									// $$->value = (char * )malloc(1000*sizeof(char));
 									int f = search_vars((yyvsp[0].fixstr));
-									
+									strcpy((yyval.expr)->value,(yyvsp[0].fixstr));
+									// (*$$).value = $1;
+									// printf("ffff %s\n",$$->value );
+
 									if(f==0)
 									{
 										f = search_param((yyvsp[0].fixstr));
 										if(!(level==2 && f!=0))
 										{
 											printf("error: %s is not defined earlier\n",(yyvsp[0].fixstr) );
-											(yyval.num) = -1;
+											(yyval.expr)->type = -1;
 										}
 									}
 									else
-										(yyval.num) = f;
+										(yyval.expr)->type = f;
 
 								}
-#line 1872 "y.tab.c" /* yacc.c:1646  */
+#line 2362 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 96:
-#line 449 "my.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[-1].num);}
-#line 1878 "y.tab.c" /* yacc.c:1646  */
+  case 97:
+#line 823 "backup.y" /* yacc.c:1646  */
+    { (yyval.expr) = new expression;(yyval.expr)->type = (yyvsp[-1].expr)->type; strcpy((yyval.expr)->value,(yyvsp[-1].expr)->value);}
+#line 2368 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1882 "y.tab.c" /* yacc.c:1646  */
+#line 2372 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2106,7 +2596,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 483 "my.y" /* yacc.c:1906  */
+#line 859 "backup.y" /* yacc.c:1906  */
 
 
 void enter_func(char name[] , char type[] )
@@ -2120,13 +2610,22 @@ void enter_func(char name[] , char type[] )
 	st[limit].local = NULL;
 }
 
+void generate(char str[])
+{
+	quadraple q;
+	// printf("%s\n",str );
+	strcpy(q.s,str);	
+	q.gotonum = -1;
+	global_table[nextquad] = q;
+	nextquad = nextquad + 1;
+}
 
 void enter_param(char id[],char type[])
 {
 	param_count++;
 	struct varlist *new_node,*temp;
 
-	new_node= malloc(sizeof(struct varlist));
+	new_node= (struct varlist *)malloc(sizeof(struct varlist));
 
 
  	strcpy(new_node->var_name,id);
@@ -2154,7 +2653,7 @@ void enter_vars(char id[])
 	// printf("%s --- %d\n", id,level);
 	struct varlist *new_node,*temp;
 
-	new_node= malloc(sizeof(struct varlist));
+	new_node= (struct varlist *)malloc(sizeof(struct varlist));
 
 	
  	strcpy(new_node->var_name,id);
@@ -2177,6 +2676,8 @@ void enter_vars(char id[])
  	}
  	// printf("%s done\n",st[limit].local->var_name);
 }
+
+
 void print_table()
 {
 	int i;
@@ -2221,11 +2722,86 @@ int search_vars(char id[])
 {
     struct varlist *current = st[limit].local;  // Initialize current
     struct varlist *temp = st[limit].param;
-
+    int f;
     while (current != NULL)
     {
         if(!strcmp(current->var_name,id) && current->level <= level)
+        {
             return (current->e_type);
+        }
+        current = current->next;
+    }
+
+
+    return 0;
+}
+
+int array_valid(char id[] , int num_b)
+{
+	struct varlist *current = st[limit].local;  // Initialize current
+    struct varlist *temp = st[limit].param;
+    int f;
+    while (current != NULL)
+    {
+        if(!strcmp(current->var_name,id) && current->level <= level)
+        {
+        	f = current->e_type;
+        	if(f==2 && current->num_b == num_b)
+        	{
+        		int count = 0;
+        		struct array_index *t;
+        		t = current->array;
+        		while(t != NULL)
+        		{
+        			if(!(for_array[count++] < t->a))
+        				return -1;
+        			t = t->next;
+        		}
+        		return 1;
+        	}
+            return (f);
+        }
+        current = current->next;
+    }
+
+
+    return 0;
+}
+int enter_num_b(char id[] , int num_b)
+{
+    struct varlist *current = st[limit].local;  // Initialize current
+    struct varlist *temp = st[limit].param;
+    int i;
+    while (current != NULL)
+    {
+        if(!strcmp(current->var_name,id) && current->level <= level)
+        {
+        	current->num_b = num_b;
+        	struct array_index *t , *t2 , *temp2;
+        	t= (struct array_index*)malloc(sizeof(struct array_index));
+        	t->a = for_array[0];
+        	// printf("%d\n",for_array[0]);
+        	t->next = NULL;
+        	current->array = t;
+        	t2 = t;
+        	for(i=1;i<num_b;i++)
+        	{
+        		temp2 = (struct array_index*)malloc(sizeof(struct array_index));
+        		temp2->a = for_array[i];
+        		temp2->next = NULL;
+        		t2->next = temp2;
+        		t2 = temp2;
+        		// printf("%d\n",for_array[i] );
+        	}
+   //      	struct array_index *pre;
+   //      	pre = current->array;
+			// while(pre != NULL)
+			// {
+			// 	printf("%d---",pre->a );
+			// 	pre = pre->next;
+			// }
+            return (current->e_type);
+        }
         current = current->next;
     }
 
@@ -2266,8 +2842,8 @@ void enter_in_struct(char id[])
 {
 	// printf("%s --- %d\n", id,level);
 	struct varlist *new_node,*temp;
+	new_node= (struct varlist *)malloc(sizeof(struct varlist));
 
-	new_node= malloc(sizeof(struct varlist));
 
 	
  	strcpy(new_node->var_name,id);
@@ -2303,4 +2879,55 @@ int search_in_struct_var(char id[])
 
 
     return 0;
+}
+
+void icprint()
+{
+	int i;
+	printf("printing Three Address Code \n");
+	for(i=0;i<nextquad;i++)
+	{
+		if(global_table[i].gotonum == -1)
+		{
+			printf("%d\t %s\n",i,global_table[i].s );
+		}
+		else
+		{
+			printf("%d\t %s goto  %d\n",i,global_table[i].s , global_table[i].gotonum);
+		}
+	}
+}
+
+char* nextvar(){
+    char b[20];
+    sprintf(b,"T_%d",varcount++);
+    // addSymbolToQueue(buffer, ST_INT, 0);
+    return strdup(b);
+}
+
+int sti(char *s)
+{
+	int r=0;
+	for(int i=0;i<strlen(s);i++)
+	{
+		r= r*10  + (s[i]-48);
+	}
+	return r;
+}
+
+void merger(vector<int> &a,vector<int> &b)
+{
+	for(int i=0;i<b.size();i++)
+	{
+		a.push_back(b[i]);
+	}
+}
+
+void backpatch(vector<int> &a,int b)
+{
+	for(int i=0;i<a.size();i++)
+	{
+		// printf("%d\n",a[i] );
+		global_table[a[i]].gotonum = b;
+	}
 }

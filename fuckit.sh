@@ -1,5 +1,5 @@
 #!/bin/bash
-yacc -d my.y
+yacc -d backup.y
 flex my.l
-gcc lex.yy.c y.tab.c -o my
+g++ -std=c++11 lex.yy.c y.tab.c -o my
 ./my < input.c

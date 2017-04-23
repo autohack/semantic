@@ -1,15 +1,20 @@
-int fuck(int a , int b)
+int fuck (int a , int b)
 {
-	int *p;
-	int k[10];
+	
 }
+struct book
+{
+	int a;
+};
 
 void main()
 {
 
-	int c;
-	int b;
 	int a;
-	a = 2 * 7;
+	int b;
+	
+	int duck[9];
+	duck[1] = 1;
+	
 	
 }

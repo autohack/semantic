@@ -341,6 +341,9 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
+#define yywrap() (/*CONSTCOND*/1)
+#define YY_SKIP_YYWRAP
+
 typedef unsigned char YY_CHAR;
 
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
@@ -494,12 +497,12 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "my.l"
-#line 2 "my.l"
+#line 4 "my.l"
 	#include "my.h"
 	#include "y.tab.h"
 	
 
-#line 503 "lex.yy.c"
+#line 506 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -717,10 +720,10 @@ YY_DECL
 		}
 
 	{
-#line 8 "my.l"
+#line 10 "my.l"
 
 
-#line 724 "lex.yy.c"
+#line 727 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -779,87 +782,88 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 10 "my.l"
+#line 12 "my.l"
 { strcpy(yylval.fixstr,"int"); return INT;};
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 11 "my.l"
+#line 13 "my.l"
 {  strcpy(yylval.fixstr,"float");return FLOAT;};
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 12 "my.l"
+#line 14 "my.l"
 { strcpy(yylval.fixstr,"char"); return CHAR;};
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 13 "my.l"
+#line 15 "my.l"
 {strcpy(yylval.fixstr,"void");return VOID;};
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 14 "my.l"
+#line 16 "my.l"
 {strcpy(yylval.fixstr,"main");return MAIN;};
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 15 "my.l"
+#line 17 "my.l"
 {strcpy(yylval.fixstr,"while");return WHILE;};
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 16 "my.l"
+#line 18 "my.l"
 {strcpy(yylval.fixstr,"struct");return STRUCT;};
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 17 "my.l"
+#line 19 "my.l"
 {strcpy(yylval.fixstr,"if");return IF;};
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 18 "my.l"
+#line 20 "my.l"
 {strcpy(yylval.fixstr,"else");return ELSE;};
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 21 "my.l"
+#line 23 "my.l"
 {strcpy(yylval.fixstr,yytext);
 
 						return IDENTIFIER;};
 	YY_BREAK
 case 11:
-#line 27 "my.l"
+#line 29 "my.l"
 case 12:
-#line 28 "my.l"
+#line 30 "my.l"
 case 13:
 YY_RULE_SETUP
-#line 28 "my.l"
-{return NUMBER;}
+#line 30 "my.l"
+{  strcpy(yylval.fixstr,yytext);
+							return NUMBER;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 30 "my.l"
+#line 33 "my.l"
 return yytext[0];
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 32 "my.l"
+#line 35 "my.l"
 ;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 33 "my.l"
+#line 36 "my.l"
 /* ignore whitespace */;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 35 "my.l"
+#line 38 "my.l"
 ECHO;
 	YY_BREAK
-#line 863 "lex.yy.c"
+#line 867 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1860,7 +1864,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 35 "my.l"
+#line 38 "my.l"
 
 
 
