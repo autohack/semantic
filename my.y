@@ -135,7 +135,7 @@ decl_param:			datatype IDENTIFIER{
 
 /* main function */
 
-startdash:			void_main '(' ')' '{' block	'}' {printf("\n syntax is correct\n");};
+startdash:			void_main '(' ')' '{' block	'}' {printf("\nSyntax is correct\n");};
 
 void_main:			VOID MAIN{
 								if(search_func($2)) 

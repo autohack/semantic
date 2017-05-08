@@ -140,7 +140,7 @@ decl_param:			datatype IDENTIFIER{
 startdash:			void_main '(' ')' '{' block	'}' { 	char buffer[100];
 														sprintf(buffer,"func end");
 														generate(buffer);
-														printf("\n syntax is correct\n");
+														printf("\nSyntax is correct\n");
 													};
 
 void_main:			VOID MAIN{
@@ -941,8 +941,10 @@ void print_table()
 {
 	int i;
 	struct varlist *temp;
-	printf("symbol table printing\n");
+	printf("Symbol table\n");
+	printf("--------------------------------\n");
 	printf("name\ttype\tparam_count\n");
+	printf("--------------------------------\n");
 	for (i = 0;i<=limit;i++)
 	{
 		printf("%s\t",st[i].name );

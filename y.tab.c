@@ -1498,7 +1498,7 @@ yyreduce:
     { 	char buffer[100];
 														sprintf(buffer,"func end");
 														generate(buffer);
-														printf("\n syntax is correct\n");
+														printf("\nSyntax is correct\n");
 													}
 #line 1504 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2682,8 +2682,10 @@ void print_table()
 {
 	int i;
 	struct varlist *temp;
-	printf("symbol table printing\n");
+	printf("Symbol table\n");
+	printf("--------------------------------\n");
 	printf("name\ttype\tparam_count\n");
+	printf("--------------------------------\n");
 	for (i = 0;i<=limit;i++)
 	{
 		printf("%s\t",st[i].name );
